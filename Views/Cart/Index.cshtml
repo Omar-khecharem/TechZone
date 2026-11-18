@@ -1,0 +1,115 @@
+@model CartViewModel
+@{
+    ViewData["Title"] = "Mon panier";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+    <div>
+        <h1 class="h2 mb-1">Mon panier</h1>
+        @if (!Model.IsEmpty)
+        {
+            <p class="text-muted mb-0">@Model.TotalQuantity article(s) dans votre panier.</p>
+        }
+    </div>
+    <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary">Continuer mes achats</a>
+</div>
+
+@if (TempData["SuccessMessage"] is string successMessage)
+{
+    <div class="alert alert-success">@successMessage</div>
+}
+
+@if (TempData["ErrorMessage"] is string errorMessage)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+@if (Model.IsEmpty)
+{
+    <div class="text-center border rounded bg-white py-5">
+        <h2 class="h4">Votre panier est vide</h2>
+        <p class="text-muted">Ajoutez des produits depuis le catalogue pour commencer vos achats.</p>
+        <a asp-controller="Product" asp-action="Index" class="btn btn-primary">Voir le catalogue</a>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="table-responsive bg-white border rounded shadow-sm">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Produit</th>
+                            <th scope="col" class="text-end">Prix unitaire</th>
+                            <th scope="col" class="text-center" style="width: 210px;">Quantité</th>
+                            <th scope="col" class="text-end">Total</th>
+                            <th scope="col"><span class="visually-hidden">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@item.ImageUrl" class="cart-item-image" alt="@item.ProductName" />
+                                        <div>
+                                            <a class="fw-semibold text-decoration-none"
+                                               asp-controller="Product"
+                                               asp-action="Details"
+                                               asp-route-id="@item.ProductId">@item.ProductName</a>
+                                            <div class="text-muted small">Stock : @item.Stock</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-end">@item.UnitPrice.ToString("N2") €</td>
+                                <td>
+                                    <form asp-action="UpdateQuantity" method="post" class="d-flex justify-content-center gap-2">
+                                        <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                        <input type="number"
+                                               name="quantity"
+                                               value="@item.Quantity"
+                                               min="1"
+                                               max="@item.Stock"
+                                               class="form-control form-control-sm"
+                                               style="width: 80px;"
+                                               aria-label="Quantité pour @item.ProductName" />
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">Modifier</button>
+                                    </form>
+                                </td>
+                                <td class="text-end fw-semibold">@item.LineTotal.ToString("N2") €</td>
+                                <td class="text-end">
+                                    <form asp-action="Remove" method="post">
+                                        <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Récapitulatif</h2>
+                    <dl class="row mb-3">
+                        <dt class="col-7 fw-normal">Sous-total</dt>
+                        <dd class="col-5 text-end">@Model.Subtotal.ToString("N2") €</dd>
+                        <dt class="col-7 fs-5">Total</dt>
+                        <dd class="col-5 text-end fs-5 fw-bold">@Model.Total.ToString("N2") €</dd>
+                    </dl>
+                    <a asp-controller="Order"
+                       asp-action="Checkout"
+                       class="btn btn-success w-100">
+                        Continuer vers la commande
+                    </a>
+                    <p class="form-text mb-0">Le stock et le total seront vérifiés avant validation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}

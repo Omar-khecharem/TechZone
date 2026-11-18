@@ -1,0 +1,119 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Mon profil";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-lg-7">
+        <h1 class="h3 mb-3">Mon profil</h1>
+
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="alert alert-success">@successMessage</div>
+        }
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="Profile" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <input asp-for="FirstName" class="form-control" autocomplete="given-name" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control" autocomplete="family-name" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" readonly />
+                        <div class="form-text">L'adresse e-mail ne peut pas être modifiée.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber" class="form-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" autocomplete="tel" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Retour</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mt-4">
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div>
+                        <h2 class="h5 mb-1">Mes commandes</h2>
+                        <p class="text-muted mb-0">
+                            @Model.TotalOrders commande(s) enregistrée(s).
+                        </p>
+                    </div>
+                    <a asp-controller="Order" asp-action="History" class="btn btn-sm btn-outline-primary">
+                        Toutes mes commandes
+                    </a>
+                </div>
+
+                @if (Model.RecentOrders.Count == 0)
+                {
+                    <p class="text-muted mb-0">Vous n'avez encore passé aucune commande.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Numéro</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col" class="text-end">Total</th>
+                                    <th scope="col">Statut</th>
+                                    <th scope="col"><span class="visually-hidden">Actions</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td>@order.OrderNumber</td>
+                                        <td>@order.OrderDate.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                                        <td class="text-end">@order.TotalAmount.ToString("N2") €</td>
+                                        <td><span class="badge text-bg-light border">@order.StatusLabel</span></td>
+                                        <td class="text-end">
+                                            <a asp-controller="Order"
+                                               asp-action="Details"
+                                               asp-route-id="@order.Id"
+                                               class="btn btn-sm btn-outline-primary">Détails</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (Model.TotalOrders > Model.RecentOrders.Count)
+                    {
+                        <a asp-controller="Order" asp-action="History" class="btn btn-link px-0 mt-2">
+                            Voir les @Model.TotalOrders commandes
+                        </a>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

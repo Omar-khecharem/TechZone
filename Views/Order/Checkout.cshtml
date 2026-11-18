@@ -1,0 +1,125 @@
+@model CheckoutViewModel
+@{
+    ViewData["Title"] = "Validation de la commande";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+    <div>
+        <h1 class="h2 mb-1">Validation de la commande</h1>
+        <p class="text-muted mb-0">Vérifiez vos informations avant de confirmer.</p>
+    </div>
+    <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-secondary">Retour au panier</a>
+</div>
+
+@if (TempData["ErrorMessage"] is string errorMessage)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<form asp-action="Checkout" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Adresse d'expédition</h2>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label"></label>
+                        <input asp-for="FullName" class="form-control" autocomplete="name" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Phone" class="form-label"></label>
+                        <input asp-for="Phone" class="form-control" autocomplete="tel" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label"></label>
+                        <input asp-for="Address" class="form-control" autocomplete="street-address" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="City" class="form-label"></label>
+                            <input asp-for="City" class="form-control" autocomplete="address-level2" />
+                            <span asp-validation-for="City" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="PostalCode" class="form-label"></label>
+                            <input asp-for="PostalCode" class="form-control" autocomplete="postal-code" />
+                            <span asp-validation-for="PostalCode" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label asp-for="Country" class="form-label"></label>
+                        <input asp-for="Country" class="form-control" autocomplete="country-name" />
+                        <span asp-validation-for="Country" class="text-danger"></span>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <h2 class="h5 mb-3">Paiement</h2>
+                    <div class="border rounded p-3 bg-light">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div>
+                                <div class="fw-semibold">Paiement à la livraison</div>
+                                <div class="text-muted small">
+                                    Aucun paiement en ligne n'est effectué. Le montant sera réglé à la réception.
+                                </div>
+                            </div>
+                            <span class="badge text-bg-warning">En attente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Récapitulatif</h2>
+
+                    <ul class="list-group list-group-flush mb-3">
+                        @foreach (var item in Model.Cart.Items)
+                        {
+                            <li class="list-group-item px-0">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="@item.ImageUrl" class="cart-item-image" alt="@item.ProductName" />
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold">@item.ProductName</div>
+                                        <div class="text-muted small">
+                                            Qté @item.Quantity × @item.UnitPrice.ToString("N2") €
+                                        </div>
+                                    </div>
+                                    <span class="fw-semibold">@item.LineTotal.ToString("N2") €</span>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+
+                    <dl class="row mb-4">
+                        <dt class="col-7 fw-normal">Sous-total</dt>
+                        <dd class="col-5 text-end">@Model.Cart.Subtotal.ToString("N2") €</dd>
+                        <dt class="col-7 fs-5">Total</dt>
+                        <dd class="col-5 text-end fs-5 fw-bold">@Model.Cart.Total.ToString("N2") €</dd>
+                    </dl>
+
+                    <button type="submit" class="btn btn-success w-100">Confirmer la commande</button>
+                    <p class="form-text text-center mb-0 mt-2">
+                        Le stock et le total seront vérifiés à nouveau lors de la confirmation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
