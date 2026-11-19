@@ -3,68 +3,68 @@
     ViewData["Title"] = Model.Name;
 }
 
-<nav aria-label="Fil d'Ariane" class="mb-3">
-    <ol class="breadcrumb mb-0">
-        <li class="breadcrumb-item"><a asp-action="Index">Catalogue</a></li>
-        <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+<nav aria-label="Fil d'Ariane" style="margin-bottom: 1rem;">
+    <ol style="margin: 0; padding: 0; list-style: none;">
+        <li style="display: inline; margin-right: 1rem;"><a asp-action="Index" style="color: #333; text-decoration: none;">Catalogue</a></li>
+        <li style="display: inline; color: #6c7573;">@Model.Name</li>
     </ol>
 </nav>
 
 @if (TempData["SuccessMessage"] is string successMessage)
 {
-    <div class="alert alert-success d-flex flex-wrap justify-content-between align-items-center gap-2">
-        <span>@successMessage</span>
-        <a asp-controller="Cart" asp-action="Index" class="alert-link">Voir le panier</a>
+    <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 0.375rem; padding: 0.75rem 1rem; margin: 0.5rem 0;">
+        <span style="font-size: 0.875rem;">@successMessage</span>
+        <a asp-controller="Cart" asp-action="Index" style="color: #155724; text-decoration: underline;">Voir le panier</a>
     </div>
 }
 
 @if (TempData["ErrorMessage"] is string errorMessage)
 {
-    <div class="alert alert-danger">@errorMessage</div>
+    <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 0.375rem; padding: 0.75rem 1rem; margin: 0.5rem 0;">
+        <span style="font-size: 0.875rem;">@errorMessage</span>
+    </div>
 }
 
-<div class="row g-4 align-items-start">
-    <div class="col-lg-6">
-        <img src="@Model.ImageUrl" class="img-fluid rounded border product-detail-image" alt="@Model.Name" />
-    </div>
+<div style="margin: 1rem 0;">
+    <div style="display: flex; gap: 1rem; align-items: start;">
+        <div style="flex: 0 0 45%; max-width: 45%;">
+            <img src="@Model.ImageUrl" alt="@Model.Name" style="width: 100%; height: auto; border-radius: 0.375rem;" />
+        </div>
 
-    <div class="col-lg-6">
-        <span class="badge text-bg-secondary mb-2">@Model.CategoryName</span>
-        <h1 class="h2 mb-3">@Model.Name</h1>
-        <p class="display-6 fw-bold text-primary">@Model.Price.ToString("N2") €</p>
-        <p class="fs-5">@Model.Description</p>
+        <div style="flex: 0 0 55%; max-width: 55%;">
+            <span style="display: inline-block; background: #6c7573; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; margin-bottom: 0.5rem;">@Model.CategoryName</span>
 
-        @if (Model.IsInStock)
-        {
-            <p class="text-success">En stock : @Model.Stock</p>
-        }
-        else
-        {
-            <p class="text-danger">Rupture de stock</p>
-        }
+            <h1 style="font-size: 1.5rem; margin: 0 0 0.5rem;">@Model.Name</h1>
+            <p style="font-size: 1.5rem; font-weight: bold; margin: 0;">@Model.Price.ToString("N2") €</p>
+            <p style="font-size: 0.875rem; margin: 0.25rem 0;">@Model.Description</p>
 
-        <div class="d-flex flex-wrap gap-2 mt-4">
-            @if (!Model.IsInStock)
+            @if (Model.IsInStock)
             {
-                <button type="button" class="btn btn-secondary" disabled>Rupture de stock</button>
-            }
-            else if (User.Identity?.IsAuthenticated == true)
-            {
-                <form asp-controller="Cart" asp-action="Add" method="post">
-                    <input type="hidden" name="productId" value="@Model.Id" />
-                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                    <button type="submit" class="btn btn-primary">Ajouter au panier</button>
-                </form>
+                <p style="color: #155724; margin: 0;">En stock : @Model.Stock</p>
             }
             else
             {
-                <a class="btn btn-primary"
-                   asp-controller="Account"
-                   asp-action="Login"
-                   asp-route-returnUrl="@Context.Request.Path">Se connecter pour ajouter au panier</a>
+                <p style="color: #dc3545; margin: 0;">Rupture de stock</p>
             }
 
-            <a asp-action="Index" class="btn btn-outline-secondary">Retour au catalogue</a>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                @if (!Model.IsInStock)
+                {
+                    <button style="padding: 0.375rem 0.5rem; background: #6c7573; color: white; border: none; border-radius: 0.25rem; cursor: not-allowed; font-size: 0.875rem;">Rupture de stock</button>
+                }
+                else if (User.Identity?.IsAuthenticated == true)
+                {
+                    <form asp-controller="Cart" asp-action="Add" method="post" style="display: inline;">
+                        <button type="submit" style="padding: 0.375rem 0.5rem; background: #007bff; color: white; border: none; border-radius: 0.25rem; cursor: pointer; font-size: 0.875rem;">Ajouter au panier</button>
+                    </form>
+                }
+                else
+                {
+                    <a href="#" style="padding: 0.375rem 0.5rem; background: #007bff; color: white; border: none; border-radius: 0.25rem; text-decoration: none; font-size: 0.875rem;">Se connecter pour ajouter au panier</a>
+                }
+
+                <a asp-action="Index" style="padding: 0.375rem 0.5rem; background: #6c7573; color: white; border: none; border-radius: 0.25rem; text-decoration: none; font-size: 0.875rem;">Retour au catalogue</a>
+            </div>
         </div>
     </div>
 </div>

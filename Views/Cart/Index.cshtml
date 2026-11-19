@@ -3,86 +3,64 @@
     ViewData["Title"] = "Mon panier";
 }
 
-<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
-    <div>
-        <h1 class="h2 mb-1">Mon panier</h1>
-        @if (!Model.IsEmpty)
-        {
-            <p class="text-muted mb-0">@Model.TotalQuantity article(s) dans votre panier.</p>
-        }
-    </div>
-    <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary">Continuer mes achats</a>
+<div style="margin-bottom: 1rem;">
+    <h1 style="margin-bottom: 0.5rem;">Mon panier</h1>
+    @if (!Model.IsEmpty)
+    {
+        <p style="margin-bottom: 0;">@Model.TotalQuantity article(s) dans votre panier.</p>
+    }
 </div>
+
+<a asp-controller="Product" asp-action="Index" style="background: #6c7573; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none;">Continuer mes achats</a>
 
 @if (TempData["SuccessMessage"] is string successMessage)
 {
-    <div class="alert alert-success">@successMessage</div>
+    <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 0.375rem; padding: 0.75rem 1rem; margin: 0.5rem 0; font-size: 0.875rem;">@successMessage</div>
 }
 
 @if (TempData["ErrorMessage"] is string errorMessage)
 {
-    <div class="alert alert-danger">@errorMessage</div>
+    <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 0.375rem; padding: 0.75rem 1rem; margin: 0.5rem 0; font-size: 0.875rem;">@errorMessage</div>
 }
 
 @if (Model.IsEmpty)
 {
-    <div class="text-center border rounded bg-white py-5">
-        <h2 class="h4">Votre panier est vide</h2>
-        <p class="text-muted">Ajoutez des produits depuis le catalogue pour commencer vos achats.</p>
-        <a asp-controller="Product" asp-action="Index" class="btn btn-primary">Voir le catalogue</a>
+    <div style="max-width: 600px; margin: 1rem auto; padding: 2rem; text-align: center; border: 1px solid #dee2e9; border-radius: 0.375rem; background: #fff;">
+        <h2 style="margin: 0 0 0.5rem;">Votre panier est vide</h2>
+        <p style="color: #6c7573; margin: 0 0 0.75rem;">Ajoutez des produits depuis le catalogue pour commencer vos achats.</p>
+        <a asp-controller="Product" asp-action="Index" style="background: #007bff; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none;">Voir le catalogue</a>
     </div>
 }
 else
 {
-    <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="table-responsive bg-white border rounded shadow-sm">
-                <table class="table align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th scope="col">Produit</th>
-                            <th scope="col" class="text-end">Prix unitaire</th>
-                            <th scope="col" class="text-center" style="width: 210px;">Quantité</th>
-                            <th scope="col" class="text-end">Total</th>
-                            <th scope="col"><span class="visually-hidden">Actions</span></th>
+    <div style="max-width: 1200px; margin: 1rem auto; display: flex; gap: 1rem;">
+        <div style="flex: 1;">
+            <div style="background: #fff; border: 1px solid #dee2e9; border-radius: 0.375rem; overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse; margin: 0;">
+                    <thead style="background: #f8f9fa;">
+                        <tr style="border-bottom: 1px solid #dee2e9;">
+                            <th scope="col" style="padding: 0.5rem; width: 30%;">Produit</th>
+                            <th scope="col" style="padding: 0.5rem; width: 15%; text-align: end; color: #333;">Prix unitaire</th>
+                            <th scope="col" style="padding: 0.5rem; width: 15%; text-align: center;">Quantité</th>
+                            <th scope="col" style="padding: 0.5rem; width: 15%; text-align: end; color: #333;">Total</th>
+                            <th scope="col" style="padding: 0.5rem; width: 15%;"><span style="color: #6c7573; font-size: 0.75rem;">Actions</span></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model.Items)
                         {
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="@item.ImageUrl" class="cart-item-image" alt="@item.ProductName" />
-                                        <div>
-                                            <a class="fw-semibold text-decoration-none"
-                                               asp-controller="Product"
-                                               asp-action="Details"
-                                               asp-route-id="@item.ProductId">@item.ProductName</a>
-                                            <div class="text-muted small">Stock : @item.Stock</div>
-                                        </div>
-                                    </div>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 0.5rem;">
+                                    <img src="@item.ImageUrl" alt="@item.ProductName" style="width: 50px; height: 50px; object-fit: cover; margin-right: 0.5rem;" />
+                                    <a href="#" style="color: #333; text-decoration: none; font-weight: bold;">@item.ProductName</a>
                                 </td>
-                                <td class="text-end">@item.UnitPrice.ToString("N2") €</td>
-                                <td>
-                                    <form asp-action="UpdateQuantity" method="post" class="d-flex justify-content-center gap-2">
-                                        <input type="hidden" name="cartItemId" value="@item.CartItemId" />
-                                        <input type="number"
-                                               name="quantity"
-                                               value="@item.Quantity"
-                                               min="1"
-                                               max="@item.Stock"
-                                               class="form-control form-control-sm"
-                                               style="width: 80px;"
-                                               aria-label="Quantité pour @item.ProductName" />
-                                        <button type="submit" class="btn btn-sm btn-outline-primary">Modifier</button>
-                                    </form>
-                                </td>
-                                <td class="text-end fw-semibold">@item.LineTotal.ToString("N2") €</td>
-                                <td class="text-end">
-                                    <form asp-action="Remove" method="post">
-                                        <input type="hidden" name="cartItemId" value="@item.CartItemId" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                <td style="padding: 0.5rem; text-align: end; color: #333;">@item.UnitPrice.ToString("N2") €</td>
+                                <td style="padding: 0.5rem; text-align: center;">@item.Quantity</td>
+                                <td style="padding: 0.5rem; text-align: end; color: #333;">@item.LineTotal.ToString("N2") €</td>
+                                <td style="padding: 0.5rem;">
+                                    <a href="#" style="color: #007bff; font-size: 0.875rem; text-decoration: none;">Modifier</a>
+                                    <form asp-action="Remove" method="post" style="display: inline;">
+                                        <button type="submit" style="color: #dc3545; font-size: 0.875rem; text-decoration: none;">Supprimer</button>
                                     </form>
                                 </td>
                             </tr>
@@ -92,23 +70,17 @@ else
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <h2 class="h5 mb-3">Récapitulatif</h2>
-                    <dl class="row mb-3">
-                        <dt class="col-7 fw-normal">Sous-total</dt>
-                        <dd class="col-5 text-end">@Model.Subtotal.ToString("N2") €</dd>
-                        <dt class="col-7 fs-5">Total</dt>
-                        <dd class="col-5 text-end fs-5 fw-bold">@Model.Total.ToString("N2") €</dd>
-                    </dl>
-                    <a asp-controller="Order"
-                       asp-action="Checkout"
-                       class="btn btn-success w-100">
-                        Continuer vers la commande
-                    </a>
-                    <p class="form-text mb-0">Le stock et le total seront vérifiés avant validation.</p>
-                </div>
+        <div style="flex: 0 0 30%; max-width: 30%;">
+            <div style="background: #fff; border: 1px solid #dee2e9; border-radius: 0.375rem; padding: 1rem; margin-top: 1rem;">
+                <h2 style="margin: 0 0 0.75rem;">Récapitulatif</h2>
+                <dl style="margin: 0;">
+                    <dt style="font-weight: normal; margin-bottom: 0.25rem;">Sous-total</dt>
+                    <dd style="text-align: end; margin-bottom: 0.5rem;">@Model.Subtotal.ToString("N2") €</dd>
+                    <dt style="margin-bottom: 0.25rem;">Total</dt>
+                    <dd style="font-weight: bold; text-align: end; margin-bottom: 0;">@Model.Total.ToString("N2") €</dd>
+                </dl>
+                <a asp-controller="Order" asp-action="Checkout" style="width: 100%; display: block; padding: 0.5rem; background: #007bff; color: white; border: none; border-radius: 0.25rem; text-decoration: none; font-size: 0.875rem;">Continuer vers la commande</a>
+                <p style="color: #6c7573; font-size: 0.75rem; margin-top: 0.75rem;">Le stock et le total seront vérifiés avant validation.</p>
             </div>
         </div>
     </div>

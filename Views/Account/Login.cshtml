@@ -4,48 +4,38 @@
     var returnUrl = ViewData["ReturnUrl"] as string;
 }
 
-<div class="row justify-content-center py-4">
-    <div class="col-md-7 col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h1 class="h3 mb-3">Se connecter</h1>
+<div style="max-width: 600px; margin: 2rem auto; padding: 1rem 1rem 2rem; background: #fff; border: 1px solid #dee2e9; border-radius: 0.375rem;">
+    <h1 style="margin-bottom: 1rem;">Se connecter</h1>
 
-                @if (TempData["ErrorMessage"] is string errorMessage)
-                {
-                    <div class="alert alert-warning">@errorMessage</div>
-                }
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div style="background: #fff3cd; border: 1px solid #ffe8c7; border-radius: 0.375rem; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.875rem;">@errorMessage</div>
+    }
 
-                <form asp-action="Login" asp-route-returnUrl="@returnUrl" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <form asp-action="Login" asp-route-returnUrl="@returnUrl" method="post" style="max-width: 400px;">
+        <div style="margin-bottom: 0.75rem;">
+            <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">Email</label>
+            <input style="width: 100%; padding: 0.375rem; border: 1px solid #ccc; border-radius: 0.25rem; margin-bottom: 0.5rem;" asp-for="Email" />
+            <span style="color: #dc3545; font-size: 0.875rem; display: block;" asp-validation-for="Email"></span>
+        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label"></label>
-                        <input asp-for="Email" class="form-control" autocomplete="email" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
+        <div style="margin-bottom: 0.75rem;">
+            <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">Mot de passe</label>
+            <input style="width: 100%; padding: 0.375rem; border: 1px solid #ccc; border-radius: 0.25rem; margin-bottom: 0.5rem;" asp-for="Password" />
+            <span style="color: #dc3545; font-size: 0.875rem; display: block;" asp-validation-for="Password"></span>
+        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-label"></label>
-                        <input asp-for="Password" class="form-control" autocomplete="current-password" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-check mb-3">
-                        <input asp-for="RememberMe" class="form-check-input" />
-                        <label asp-for="RememberMe" class="form-check-label"></label>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100">Se connecter</button>
-                </form>
-
-                <p class="mt-3 mb-0 text-center">
-                    Pas encore de compte ? <a asp-action="Register">S'inscrire</a>
-                </p>
+        <div style="margin-bottom: 0.75rem; display: flex; justify-content: between;">
+            <div style="flex: 1;">
+                <input type="checkbox" id="remember" style="margin-right: 0.25rem; margin-bottom: 0;" asp-for="RememberMe" />
+                <label style="font-size: 0.875rem;" asp-for="RememberMe">Se souvenir de moi</label>
             </div>
         </div>
-    </div>
-</div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+        <button type="submit" style="width: 100%; padding: 0.5rem; background: #007bff; color: white; border: none; border-radius: 0.25rem; cursor: pointer; font-size: 0.875rem;">Se connecter</button>
+
+        <p class="mt-2" style="text-align: center; font-size: 0.875rem;">
+            Pas encore de compte ? <a asp-action="Register" style="color: #007bff; text-decoration: none;">S'inscrire</a>
+        </p>
+    </form>
+</div>

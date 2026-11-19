@@ -3,63 +3,57 @@
     ViewData["Title"] = "Confirmation de commande";
 }
 
-<div class="text-center py-4">
-    <div class="display-6 mb-2">Merci pour votre commande</div>
-    <p class="lead text-muted mb-0">Votre commande a bien été enregistrée.</p>
-</div>
+<div style="max-width: 800px; margin: 2rem auto; padding: 2rem 1rem; background: #fff; border: 1px solid #dee2e9; border-radius: 0.375rem;">
+    <div style="text-align: center; margin-bottom: 1rem;">
+        <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Merci pour votre commande</h1>
+        <p style="color: #6c7573; margin: 0;">Votre commande a bien été enregistrée.</p>
+    </div>
 
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
-        <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <div class="text-muted small">Numéro de commande</div>
-                <div class="fs-5 fw-bold">@Model.OrderNumber</div>
+    <div style="margin: 1rem 0;">
+        <div style="background: #f8f9fa; border: 1px solid #dee2e9; border-radius: 0.375rem; padding: 1rem; margin-bottom: 1rem;">
+            <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+                <div>
+                    <div style="font-size: 0.875rem; color: #6c7573;">Numéro de commande</div>
+                    <div style="font-weight: bold; font-size: 1.5rem;">@Model.OrderNumber</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.875rem; color: #6c7573;">Date</div>
+                    <div style="font-weight: bold; font-size: 1.5rem;">@Model.OrderDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.875rem; color: #6c7573;">Statut</div>
+                    <span style="display: inline-block; background: #28a745; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">@Model.StatusLabel</span>
+                </div>
             </div>
-            <div class="col-md-4">
-                <div class="text-muted small">Date</div>
-                <div class="fw-semibold">@Model.OrderDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
-            </div>
-            <div class="col-md-4">
-                <div class="text-muted small">Statut</div>
-                <span class="badge text-bg-success">@Model.StatusLabel</span>
-            </div>
-        </div>
 
-        <h2 class="h5 mb-3">Produits commandés</h2>
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead>
+            <h2 style="font-size: 1.25rem; margin: 0.5rem 0;">Produits commandés</h2>
+            <table style="width: 100%; border-collapse: collapse; margin: 0;">
+                <thead style="background: #f8f9fa; border-bottom: 1px solid #dee2e9;">
                     <tr>
-                        <th scope="col">Produit</th>
-                        <th scope="col" class="text-end">Prix unitaire</th>
-                        <th scope="col" class="text-center">Quantité</th>
-                        <th scope="col" class="text-end">Total</th>
+                        <th scope="col" style="padding: 0.5rem;">Produit</th>
+                        <th scope="col" style="padding: 0.5rem; text-align: end;">Prix unitaire</th>
+                        <th scope="col" style="padding: 0.5rem; text-align: center;">Quantité</th>
+                        <th scope="col" style="padding: 0.5rem; text-align: end;">Total</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style="font-size: 0.875rem;">
                     @foreach (var item in Model.Items)
                     {
-                        <tr>
-                            <td>@item.ProductName</td>
-                            <td class="text-end">@item.UnitPrice.ToString("N2") €</td>
-                            <td class="text-center">@item.Quantity</td>
-                            <td class="text-end fw-semibold">@item.LineTotal.ToString("N2") €</td>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 0.5rem;">@item.ProductName</td>
+                            <td style="padding: 0.5rem; text-align: end;">@item.UnitPrice.ToString("N2") €</td>
+                            <td style="padding: 0.5rem; text-align: center;">@item.Quantity</td>
+                            <td style="padding: 0.5rem; text-align: end;">@item.LineTotal.ToString("N2") €</td>
                         </tr>
                     }
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <th colspan="3" class="text-end fs-5">Total</th>
-                        <th class="text-end fs-5">@Model.TotalAmount.ToString("N2") €</th>
-                    </tr>
-                </tfoot>
             </table>
         </div>
 
-        <div class="row g-4 mt-2">
-            <div class="col-md-6">
-                <h2 class="h5 mb-2">Adresse d'expédition</h2>
-                <address class="mb-0">
+        <div style="display: flex; gap: 1rem; justify-content: space-between;">
+            <div style="flex: 0 0 48%; max-width: 48%;">
+                <h2 style="font-size: 1.25rem;">Adresse d'expédition</h2>
+                <address style="font-size: 0.875rem; line-height: 1.5;">
                     <strong>@Model.ShippingFullName</strong><br />
                     @Model.ShippingAddress<br />
                     @Model.ShippingPostalCode @Model.ShippingCity<br />
@@ -67,20 +61,18 @@
                     Tél. : @Model.ShippingPhone
                 </address>
             </div>
-            <div class="col-md-6">
-                <h2 class="h5 mb-2">Paiement</h2>
-                <p class="mb-1">@Model.PaymentMethodLabel</p>
-                <span class="badge text-bg-warning">@Model.PaymentStatusLabel</span>
-                <p class="text-muted small mt-2 mb-0">
-                    Aucun paiement en ligne n'a été effectué. Le règlement se fera à la livraison.
-                </p>
+            <div style="flex: 0 0 48%; max-width: 48%;">
+                <h2 style="font-size: 1.25rem;">Paiement</h2>
+                <p style="font-size: 0.875rem; margin-bottom: 0.25rem;">@Model.PaymentMethodLabel</p>
+                <span style="display: inline-block; background: #ffc107; color: #000; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">@Model.PaymentStatusLabel</span>
+                <p style="color: #6c7573; font-size: 0.75rem; margin: 0.25rem 0;">Aucun paiement en ligne n'a été effectué. Le règlement se fera à la livraison.</p>
             </div>
         </div>
     </div>
 </div>
 
-<div class="d-flex flex-wrap gap-2">
-    <a asp-controller="Product" asp-action="Index" class="btn btn-primary">Continuer mes achats</a>
-    <a asp-controller="Order" asp-action="History" class="btn btn-outline-primary">Voir mes commandes</a>
-    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Retour à l'accueil</a>
+<div style="max-width: 800px; margin: 1rem auto; display: flex; gap: 0.5rem;">
+    <a asp-controller="Product" asp-action="Index" style="flex: 1; padding: 0.5rem; background: #007bff; color: white; border: none; border-radius: 0.25rem; text-decoration: none;">Continuer mes achats</a>
+    <a asp-controller="Order" asp-action="History" style="flex: 1; padding: 0.5rem; background: #6c7573; color: white; border: none; border-radius: 0.25rem; text-decoration: none;">Voir mes commandes</a>
+    <a asp-controller="Home" asp-action="Index" style="flex: 1; padding: 0.5rem; background: #dc3545; color: white; border: none; border-radius: 0.25rem; text-decoration: none;">Retour à l'accueil</a>
 </div>

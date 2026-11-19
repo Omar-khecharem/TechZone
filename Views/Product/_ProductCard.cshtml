@@ -1,21 +1,17 @@
 @model ProductCardViewModel
 
-<div class="card h-100 border-0 shadow-sm product-card">
-    <a asp-controller="Product" asp-action="Details" asp-route-id="@Model.Id">
-        <img src="@Model.ImageUrl" class="card-img-top product-card-image" alt="@Model.Name" loading="lazy" />
+<div style="border: 1px solid #dee2e9; border-radius: 0.375rem; margin-bottom: 1rem; background: #fff; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);">
+    <a asp-controller="Product" asp-action="Details" asp-route-id="@Model.Id" style="display: block;">
+        <img src="@Model.ImageUrl" alt="@Model.Name" style="width: 100%; height: 210px; object-fit: cover; border-radius: 0.25rem;" />
     </a>
-    <div class="card-body d-flex flex-column">
-        <p class="text-uppercase text-muted small mb-1">@Model.CategoryName</p>
-        <h2 class="h5 card-title">
-            <a class="text-decoration-none text-dark" asp-controller="Product" asp-action="Details" asp-route-id="@Model.Id">
-                @Model.Name
-            </a>
+    <div style="padding: 1rem;">
+        <p style="text-transform: uppercase; font-size: 0.75rem; color: #6c7573; margin-bottom: 0.25rem;">@Model.CategoryName</p>
+        <h2 style="font-size: 1.25rem; margin: 0 0 0.5rem;">
+            <a href="#" style="color: #333; text-decoration: none;">@Model.Name</a>
         </h2>
-        <div class="mt-auto d-flex justify-content-between align-items-center pt-3">
-            <span class="fs-5 fw-bold">@Model.Price.ToString("N2") €</span>
-            <a class="btn btn-sm btn-outline-primary" asp-controller="Product" asp-action="Details" asp-route-id="@Model.Id">
-                Voir le produit
-            </a>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem; margin-top: 0.5rem; border-top: 1px solid #e9ecef;">
+            <span style="font-size: 1.25rem; font-weight: bold;">@Model.Price.ToString("N2") €</span>
+            <a href="#" style="font-size: 0.75rem; color: #007bff; text-decoration: none;">Voir le produit</a>
         </div>
     </div>
 </div>
