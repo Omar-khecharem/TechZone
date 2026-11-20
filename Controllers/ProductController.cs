@@ -8,7 +8,16 @@ namespace TechZone.Controllers
 {
     public class ProductController : Controller
     {
-        private const int PageSize = 9;
+        private const int PageSize = 8;
+
+        private static readonly HashSet<string> AllowedSorts = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "featured",
+            "price-asc",
+            "price-desc",
+            "name-asc",
+            "newest"
+        };
 
         private readonly IProductService _productService;
 
@@ -22,9 +31,17 @@ namespace TechZone.Controllers
             int? categoryId,
             string? minPrice,
             string? maxPrice,
+            bool inStock = false,
+            string? sort = null,
             int page = 1)
         {
             q = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
+
+            sort = string.IsNullOrWhiteSpace(sort) ? "featured" : sort.Trim().ToLowerInvariant();
+            if (!AllowedSorts.Contains(sort))
+            {
+                sort = "featured";
+            }
 
             if (q?.Length > 100)
             {
@@ -87,12 +104,27 @@ namespace TechZone.Controllers
                 categoryId = null;
             }
 
+            var categoryCounts = await _productService.GetCategoryProductCountsAsync();
+            var (_, rawMaxPrice) = await _productService.GetPriceRangeAsync();
+
+            var priceFloor = 0m;
+            var priceCeil = rawMaxPrice > 0 ? Math.Ceiling(rawMaxPrice) : 1000m;
+            if (priceCeil <= priceFloor)
+            {
+                priceCeil = priceFloor + 1000m;
+            }
+
+            var hasPriceFilter =
+                (minPriceValue.HasValue && minPriceValue.Value > priceFloor)
+                || (maxPriceValue.HasValue && maxPriceValue.Value < priceCeil);
+
             var categoryViewModels = categories
                 .Select(category => new CategoryFilterViewModel
                 {
                     Id = category.Id,
                     Name = category.Name,
-                    Description = category.Description
+                    Description = category.Description,
+                    ProductCount = categoryCounts.TryGetValue(category.Id, out var count) ? count : 0
                 })
                 .ToList();
             ViewData["TechZoneCategories"] = categoryViewModels;
@@ -102,6 +134,8 @@ namespace TechZone.Controllers
                 categoryId,
                 minPriceValue,
                 maxPriceValue,
+                inStock,
+                sort,
                 Math.Max(page, 1),
                 PageSize);
 
@@ -111,6 +145,11 @@ namespace TechZone.Controllers
                 CategoryId = categoryId,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
+                HasPriceFilter = hasPriceFilter,
+                InStockOnly = inStock,
+                Sort = sort,
+                PriceFloor = priceFloor,
+                PriceCeil = priceCeil,
                 Categories = categoryViewModels,
                 Products = new PagedResult<ProductCardViewModel>
                 {
@@ -119,9 +158,13 @@ namespace TechZone.Controllers
                         {
                             Id = product.Id,
                             Name = product.Name,
+                            Description = product.Description,
                             Price = product.Price,
                             ImageUrl = product.ImageUrl,
-                            CategoryName = product.Category.Name
+                            CategoryId = product.CategoryId,
+                            CategoryName = product.Category.Name,
+                            Stock = product.Stock,
+                            SalesCount = product.SalesCount
                         })
                         .ToList(),
                     Page = products.Page,

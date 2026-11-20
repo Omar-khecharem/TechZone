@@ -1,17 +1,94 @@
 @model ProductCardViewModel
+@{
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+}
 
-<div style="border: 1px solid #dee2e9; border-radius: 0.375rem; margin-bottom: 1rem; background: #fff; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);">
-    <a asp-controller="Product" asp-action="Details" asp-route-id="@Model.Id" style="display: block;">
-        <img src="@Model.ImageUrl" alt="@Model.Name" style="width: 100%; height: 210px; object-fit: cover; border-radius: 0.25rem;" />
-    </a>
-    <div style="padding: 1rem;">
-        <p style="text-transform: uppercase; font-size: 0.75rem; color: #6c7573; margin-bottom: 0.25rem;">@Model.CategoryName</p>
-        <h2 style="font-size: 1.25rem; margin: 0 0 0.5rem;">
-            <a href="#" style="color: #333; text-decoration: none;">@Model.Name</a>
-        </h2>
-        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem; margin-top: 0.5rem; border-top: 1px solid #e9ecef;">
-            <span style="font-size: 1.25rem; font-weight: bold;">@Model.Price.ToString("N2") €</span>
-            <a href="#" style="font-size: 0.75rem; color: #007bff; text-decoration: none;">Voir le produit</a>
+<article class="cat-product" data-product-card data-product-id="@Model.Id">
+    <div class="cat-product-media">
+        <a class="cat-product-link" asp-action="Details" asp-route-id="@Model.Id" aria-label="Voir @Model.Name">
+            <img src="@Model.ImageUrl" alt="@Model.Name" loading="lazy" decoding="async" />
+        </a>
+
+        <button class="cat-heart" type="button" data-wishlist="@Model.Id"
+                aria-label="Ajouter @Model.Name aux favoris" aria-pressed="false">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 20s-7-4.4-7-9.3A3.7 3.7 0 0 1 12 8a3.7 3.7 0 0 1 7 2.7C19 15.6 12 20 12 20Z"
+                      stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="cat-product-body">
+        <div class="cat-product-topline">
+            <span class="cat-product-cat">@Model.CategoryName</span>
+            <span class="cat-stock @(Model.IsInStock ? "is-in" : "is-out")">
+                <span class="cat-stock-dot" aria-hidden="true"></span>
+                @(Model.IsInStock ? "En stock" : "Rupture")
+            </span>
+        </div>
+
+        <h3 class="cat-product-name">
+            <a asp-action="Details" asp-route-id="@Model.Id">@Model.Name</a>
+        </h3>
+
+        <div class="cat-product-meta">
+            <span class="cat-product-price">@Model.Price.ToString("N2") €</span>
+
+            <button class="cat-compare" type="button" data-compare-toggle="@Model.Id"
+                    aria-pressed="false" aria-label="Ajouter @Model.Name au comparateur">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3.5" y="4" width="7" height="16" rx="1.8" stroke="currentColor" stroke-width="1.8" />
+                    <rect x="13.5" y="4" width="7" height="16" rx="1.8" stroke="currentColor" stroke-width="1.8" />
+                </svg>
+                <span data-compare-label>Comparer</span>
+            </button>
         </div>
     </div>
-</div>
+
+    <div class="cat-product-actions">
+        <a class="cat-product-view" asp-action="Details" asp-route-id="@Model.Id" aria-label="Fiche de @Model.Name">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M2.8 12S6 5.8 12 5.8 21.2 12 21.2 12 18 18.2 12 18.2 2.8 12 2.8 12Z"
+                      stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                <circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.8" />
+            </svg>
+        </a>
+
+        @if (!Model.IsInStock)
+        {
+            <span class="cat-add is-disabled">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M6 8h12l-1 12H7L6 8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                    <path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                Rupture
+            </span>
+        }
+        else if (isAuthenticated)
+        {
+            <form class="cat-add-form" asp-controller="Cart" asp-action="Add" method="post">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <button class="cat-add" type="submit" aria-label="Ajouter @Model.Name au panier">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M6 8h12l-1 12H7L6 8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                        <path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                    <span>Ajouter au panier</span>
+                </button>
+            </form>
+        }
+        else
+        {
+            <a class="cat-add" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl"
+               aria-label="Se connecter pour ajouter @Model.Name au panier">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M6 8h12l-1 12H7L6 8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                    <path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                <span>Ajouter au panier</span>
+            </a>
+        }
+    </div>
+</article>

@@ -22,6 +22,8 @@ namespace TechZone.Controllers
                 categoryId: null,
                 minPrice: null,
                 maxPrice: null,
+                inStockOnly: false,
+                sort: "featured",
                 page: 1,
                 pageSize: 12);
             var categories = await _productService.GetCategoriesAsync();
@@ -43,9 +45,13 @@ namespace TechZone.Controllers
                     {
                         Id = product.Id,
                         Name = product.Name,
+                        Description = product.Description,
                         Price = product.Price,
                         ImageUrl = product.ImageUrl,
-                        CategoryName = product.Category.Name
+                        CategoryId = product.CategoryId,
+                        CategoryName = product.Category.Name,
+                        Stock = product.Stock,
+                        SalesCount = product.SalesCount
                     })
                     .ToList(),
                 Categories = categoryViewModels

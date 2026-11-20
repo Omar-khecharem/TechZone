@@ -1,127 +1,480 @@
 @model CatalogViewModel
+@using System.Globalization
+@functions {
+    private static decimal ParsePrice(string? raw, decimal fallback)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return fallback;
+        }
+
+        var normalized = raw
+            .Trim()
+            .Replace(" ", string.Empty)
+            .Replace("\u00A0", string.Empty)
+            .Replace(',', '.');
+
+        return decimal.TryParse(normalized, NumberStyles.Number, CultureInfo.InvariantCulture, out var value)
+            ? value
+            : fallback;
+    }
+
+    private static IEnumerable<int?> BuildPager(int current, int total, int window = 1)
+    {
+        if (total <= 0)
+        {
+            yield break;
+        }
+
+        var pages = new SortedSet<int> { 1, total };
+        for (var index = current - window; index <= current + window; index++)
+        {
+            if (index >= 1 && index <= total)
+            {
+                pages.Add(index);
+            }
+        }
+
+        var previous = 0;
+        foreach (var page in pages)
+        {
+            if (previous != 0 && page - previous > 1)
+            {
+                yield return null;
+            }
+
+            yield return page;
+            previous = page;
+        }
+    }
+}
 @{
     ViewData["Title"] = "Catalogue";
+
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+    var products = Model.Products;
+    var activeCategory = Model.ActiveCategory;
+
+    var priceFloor = Model.PriceFloor;
+    var priceCeil = Model.PriceCeil;
+
+    var rangeMin = Math.Clamp(ParsePrice(Model.MinPrice, priceFloor), priceFloor, priceCeil);
+    var rangeMax = Math.Clamp(ParsePrice(Model.MaxPrice, priceCeil), priceFloor, priceCeil);
+    if (rangeMin > rangeMax)
+    {
+        (rangeMin, rangeMax) = (rangeMax, rangeMin);
+    }
+
+    var sortOptions = new (string Value, string Label)[]
+    {
+        ("featured", "En vedette"),
+        ("price-asc", "Prix croissant"),
+        ("price-desc", "Prix décroissant"),
+        ("name-asc", "Nom (A – Z)"),
+        ("newest", "Nouveautés")
+    };
+
+    var pagerRoute = new Dictionary<string, string>();
+    if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+    {
+        pagerRoute["q"] = Model.SearchTerm!;
+    }
+
+    if (Model.CategoryId.HasValue)
+    {
+        pagerRoute["categoryId"] = Model.CategoryId.Value.ToString(CultureInfo.InvariantCulture);
+    }
+
+    if (Model.HasPriceFilter)
+    {
+        pagerRoute["minPrice"] = rangeMin.ToString("0.##", CultureInfo.InvariantCulture);
+        pagerRoute["maxPrice"] = rangeMax.ToString("0.##", CultureInfo.InvariantCulture);
+    }
+
+    if (Model.InStockOnly)
+    {
+        pagerRoute["inStock"] = "true";
+    }
+
+    pagerRoute["sort"] = Model.Sort;
+
+    var comparePayload = products.Items.Select(product => new
+    {
+        id = product.Id,
+        name = product.Name,
+        category = product.CategoryName,
+        description = product.Description,
+        price = product.Price,
+        priceLabel = product.Price.ToString("N2") + " €",
+        stock = product.Stock,
+        inStock = product.IsInStock,
+        imageUrl = product.ImageUrl,
+        detailsUrl = Url.Action("Details", "Product", new { id = product.Id })
+    });
+
+    var compareJson = System.Text.Json.JsonSerializer.Serialize(comparePayload);
+    var totalCategoryCount = Model.Categories.Sum(category => category.ProductCount);
 }
 
-<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
-    <div>
-        <h1 class="h2 mb-1">Catalogue</h1>
-        <p class="text-muted mb-0">Découvrez nos produits high-tech.</p>
-    </div>
-    <span class="text-muted">@Model.Products.TotalCount produit(s)</span>
-</div>
+<div id="catalog-app"
+     class="cat-page"
+     data-compare-max="3"
+     data-authenticated="@(isAuthenticated ? "true" : "false")"
+     data-login-url="@Url.Action("Login", "Account")"
+     data-return-url="@returnUrl">
+    <div class="tz-container">
+        <h1 class="cat-sr-title">Catalogue TechZone</h1>
 
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-        <form asp-action="Index" method="get" class="row g-3 align-items-end">
-            <div class="col-md-4 col-lg-3">
-                <label for="q" class="form-label">Recherche</label>
-                <input id="q" name="q" value="@Model.SearchTerm" class="form-control" placeholder="Nom du produit" />
-            </div>
+        <div class="cat-layout">
+            <aside class="cat-sidebar" aria-label="Filtres du catalogue">
+                <form id="catalog-filter-form" class="cat-filters" asp-action="Index" method="get" data-filter-form>
+                    <div class="cat-filters-head">
+                        <span class="cat-filters-title">Filtres</span>
+                        @if (Model.HasFilters)
+                        {
+                            <a class="cat-reset" asp-action="Index">Réinitialiser</a>
+                        }
+                    </div>
 
-            <div class="col-md-4 col-lg-3">
-                <label for="categoryId" class="form-label">Catégorie</label>
-                <select id="categoryId" name="categoryId" class="form-select">
-                    <option value="">Toutes les catégories</option>
-                    @foreach (var category in Model.Categories)
+                    <div class="cat-filter-group">
+                        <label class="cat-filter-label" for="catalog-search">Recherche</label>
+                        <div class="cat-filter-search">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2" />
+                                <path d="m19.5 19.5-3.8-3.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                            <input id="catalog-search" type="search" name="q" value="@Model.SearchTerm"
+                                   placeholder="Nom du produit" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <details class="cat-filter-group cat-acc" open>
+                        <summary>
+                            <span>Catégories</span>
+                            <span class="cat-sum-note">@totalCategoryCount</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </summary>
+                        <div class="cat-filter-body">
+                            <div class="cat-cat-list">
+                                <label class="cat-check">
+                                    <input type="radio" name="categoryId" value=""
+                                           checked="@(!Model.CategoryId.HasValue ? "checked" : null)"
+                                           data-auto-submit />
+                                    <span class="cat-check-box" aria-hidden="true"></span>
+                                    <span class="cat-check-label">Toutes les catégories</span>
+                                    <span class="cat-check-count">@totalCategoryCount</span>
+                                </label>
+
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <label class="cat-check">
+                                        <input type="radio" name="categoryId" value="@category.Id"
+                                               checked="@(Model.CategoryId == category.Id ? "checked" : null)"
+                                               data-auto-submit />
+                                        <span class="cat-check-box" aria-hidden="true"></span>
+                                        <span class="cat-check-label">@category.Name</span>
+                                        <span class="cat-check-count">@category.ProductCount</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="cat-filter-group cat-acc" open>
+                        <summary>
+                            <span>Prix</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </summary>
+                        <div class="cat-filter-body">
+                            <div class="cat-price">
+                                <div class="cat-price-track" data-price-track>
+                                    <span class="cat-price-fill" aria-hidden="true"></span>
+                                    <input type="range"
+                                           data-price-min
+                                           min="@priceFloor.ToString("0.##", CultureInfo.InvariantCulture)"
+                                           max="@priceCeil.ToString("0.##", CultureInfo.InvariantCulture)"
+                                           step="1"
+                                           value="@rangeMin.ToString("0.##", CultureInfo.InvariantCulture)"
+                                           aria-label="Prix minimum" />
+                                    <input type="range"
+                                           data-price-max
+                                           min="@priceFloor.ToString("0.##", CultureInfo.InvariantCulture)"
+                                           max="@priceCeil.ToString("0.##", CultureInfo.InvariantCulture)"
+                                           step="1"
+                                           value="@rangeMax.ToString("0.##", CultureInfo.InvariantCulture)"
+                                           aria-label="Prix maximum" />
+                                </div>
+
+                                <input type="hidden" name="minPrice" data-price-min-input
+                                       value="@rangeMin.ToString("0.##", CultureInfo.InvariantCulture)" />
+                                <input type="hidden" name="maxPrice" data-price-max-input
+                                       value="@rangeMax.ToString("0.##", CultureInfo.InvariantCulture)" />
+
+                                <div class="cat-price-values">
+                                    <span class="cat-price-pill">
+                                        Min
+                                        <span class="cat-price-pill-value">
+                                            <b data-price-min-label>@rangeMin.ToString("N0")</b> €
+                                        </span>
+                                    </span>
+                                    <span class="cat-price-pill">
+                                        Max
+                                        <span class="cat-price-pill-value">
+                                            <b data-price-max-label>@rangeMax.ToString("N0")</b> €
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="cat-filter-group cat-acc" open>
+                        <summary>
+                            <span>Disponibilité</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </summary>
+                        <div class="cat-filter-body">
+                            <label class="cat-check">
+                                <input type="checkbox" name="inStock" value="true"
+                                       checked="@(Model.InStockOnly ? "checked" : null)"
+                                       data-auto-submit />
+                                <span class="cat-check-box" aria-hidden="true"></span>
+                                <span class="cat-check-label">En stock uniquement</span>
+                            </label>
+                        </div>
+                    </details>
+
+                    <button class="cat-apply" type="submit">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                        Appliquer les filtres
+                    </button>
+                </form>
+            </aside>
+
+            <div class="cat-main">
+                @if (TempData["SuccessMessage"] is string successMessage)
+                {
+                    <div class="cat-flash is-success" role="status">
+                        <span>@successMessage</span>
+                        <a asp-controller="Cart" asp-action="Index">Voir le panier</a>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] is string errorMessage)
+                {
+                    <div class="cat-flash is-error" role="alert">
+                        <span>@errorMessage</span>
+                    </div>
+                }
+
+                <div asp-validation-summary="All" class="cat-validation"></div>
+
+                <div class="cat-toolbar">
+                    <nav class="cat-breadcrumb" aria-label="Fil d'Ariane">
+                        <a asp-controller="Home" asp-action="Index">Accueil</a>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        @if (activeCategory is not null)
+                        {
+                            <a asp-action="Index">Catalogue</a>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <span>@activeCategory.Name</span>
+                        }
+                        else
+                        {
+                            <span>Catalogue</span>
+                        }
+                    </nav>
+
+                    <div class="cat-toolbar-right">
+                        <div class="cat-sort">
+                            <span class="cat-sort-label">Trier par</span>
+                            <span class="cat-sort-select">
+                                <select name="sort" form="catalog-filter-form" data-sort-select aria-label="Trier les produits">
+                                    @foreach (var option in sortOptions)
+                                    {
+                                        <option value="@option.Value" selected="@(Model.Sort == option.Value ? "selected" : null)">
+                                            @option.Label
+                                        </option>
+                                    }
+                                </select>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </span>
+                            <button class="cat-sort-submit" type="submit" form="catalog-filter-form">Trier</button>
+                        </div>
+
+                        <div class="cat-view" role="group" aria-label="Affichage des produits">
+                            <button class="cat-view-btn is-active" type="button" data-view="grid" aria-pressed="true" aria-label="Affichage en grille">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <rect x="4" y="4" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.9" />
+                                    <rect x="13" y="4" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.9" />
+                                    <rect x="4" y="13" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.9" />
+                                    <rect x="13" y="13" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.9" />
+                                </svg>
+                            </button>
+                            <button class="cat-view-btn" type="button" data-view="list" aria-pressed="false" aria-label="Affichage en liste">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cat-meta">
+                    <span>
+                        <strong>@products.TotalCount</strong> produit(s)
+                        @if (activeCategory is not null)
+                        {
+                            <text>dans <strong>@activeCategory.Name</strong></text>
+                        }
+                    </span>
+                    @if (Model.HasFilters)
                     {
-                        <option value="@category.Id" selected="@(Model.CategoryId == category.Id ? "selected" : null)">
-                            @category.Name
-                        </option>
+                        <a class="cat-meta-reset" asp-action="Index">Effacer les filtres</a>
                     }
-                </select>
-            </div>
+                </div>
 
-            <div class="col-6 col-md-2">
-                <label for="minPrice" class="form-label">Prix minimum</label>
-                <input id="minPrice" name="minPrice" value="@Model.MinPrice" class="form-control" inputmode="decimal" placeholder="0" />
-            </div>
+                @if (products.Items.Count == 0)
+                {
+                    <div class="cat-empty">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.8" />
+                            <path d="m19.5 19.5-3.8-3.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                        <h2>Aucun produit trouvé</h2>
+                        <p>Aucun produit ne correspond à votre recherche. Essayez d'élargir vos filtres ou de modifier vos critères.</p>
+                        <a class="home-btn home-btn-ghost" asp-action="Index">Réinitialiser les filtres</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="cat-grid" data-catalog-grid>
+                        @foreach (var product in products.Items)
+                        {
+                            <partial name="_ProductCard" model="product" />
+                        }
+                    </div>
 
-            <div class="col-6 col-md-2">
-                <label for="maxPrice" class="form-label">Prix maximum</label>
-                <input id="maxPrice" name="maxPrice" value="@Model.MaxPrice" class="form-control" inputmode="decimal" placeholder="2000" />
-            </div>
+                    @if (products.TotalPages > 1)
+                    {
+                        <nav class="cat-pagination" aria-label="Pagination du catalogue">
+                            @if (products.HasPreviousPage)
+                            {
+                                pagerRoute["page"] = (products.Page - 1).ToString(CultureInfo.InvariantCulture);
+                                <a class="cat-page-btn" asp-action="Index" asp-all-route-data="pagerRoute">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="m15 6-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <span>Précédent</span>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="cat-page-btn is-disabled">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="m15 6-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <span>Précédent</span>
+                                </span>
+                            }
 
-            <div class="col-md-12 col-lg-2 d-flex gap-2">
-                <button type="submit" class="btn btn-primary flex-grow-1">Filtrer</button>
-                <a asp-action="Index" class="btn btn-outline-secondary">Réinitialiser</a>
+                            @foreach (var pageNumber in BuildPager(products.Page, products.TotalPages))
+                            {
+                                if (pageNumber is null)
+                                {
+                                    <span class="cat-page-dots" aria-hidden="true">…</span>
+                                }
+                                else if (pageNumber == products.Page)
+                                {
+                                    <span class="cat-page-btn is-current" aria-current="page">@pageNumber</span>
+                                }
+                                else
+                                {
+                                    pagerRoute["page"] = pageNumber.Value.ToString(CultureInfo.InvariantCulture);
+                                    <a class="cat-page-btn" asp-action="Index" asp-all-route-data="pagerRoute">@pageNumber</a>
+                                }
+                            }
+
+                            @if (products.HasNextPage)
+                            {
+                                pagerRoute["page"] = (products.Page + 1).ToString(CultureInfo.InvariantCulture);
+                                <a class="cat-page-btn" asp-action="Index" asp-all-route-data="pagerRoute">
+                                    <span>Suivant</span>
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="cat-page-btn is-disabled">
+                                    <span>Suivant</span>
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                            }
+                        </nav>
+                    }
+                }
             </div>
+        </div>
+
+        <div class="cat-comparebar" data-compare-bar hidden>
+            <div class="cat-comparebar-inner">
+                <div class="cat-comparebar-head">
+                    <span class="cat-comparebar-title"><b data-compare-count>0</b> <span>sélectionné(s)</span></span>
+                    <button class="cat-comparebar-clear" type="button" data-compare-clear>Tout effacer</button>
+                </div>
+                <div class="cat-comparebar-body">
+                    <div class="cat-comparebar-items" data-compare-items></div>
+                    <button class="cat-comparebar-open" type="button" data-compare-open disabled>Comparer</button>
+                </div>
+            </div>
+        </div>
+
+        <dialog class="cat-cmp-modal" data-compare-modal aria-labelledby="tz-compare-title">
+            <div class="cat-cmp-modal-inner">
+                <div class="cat-cmp-modal-head">
+                    <div>
+                        <span class="home-kicker">Comparateur</span>
+                        <h2 class="cat-cmp-title" id="tz-compare-title">Comparer les produits</h2>
+                    </div>
+                    <button class="cat-cmp-close" type="button" data-compare-close aria-label="Fermer le comparateur">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="cat-cmp-scroll">
+                    <div class="cat-cmp-table" data-compare-table></div>
+                </div>
+            </div>
+        </dialog>
+
+        <div class="cat-toast" data-compare-toast role="status" hidden></div>
+
+        <script id="tz-compare-data" type="application/json">@Html.Raw(compareJson)</script>
+
+        <form id="tz-compare-add-form" asp-controller="Cart" asp-action="Add" method="post" hidden>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="productId" value="" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
         </form>
     </div>
 </div>
-
-<div asp-validation-summary="All" class="text-danger mb-3"></div>
-
-@if (Model.Products.Items.Count == 0)
-{
-    <div class="text-center border rounded bg-white py-5">
-        <p class="fs-5 mb-2">Aucun produit ne correspond à votre recherche.</p>
-        <a asp-action="Index" class="btn btn-outline-primary">Réinitialiser les filtres</a>
-    </div>
-}
-else
-{
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
-        @foreach (var product in Model.Products.Items)
-        {
-            <div class="col">
-                <partial name="_ProductCard" model="product" />
-            </div>
-        }
-    </div>
-
-    @if (Model.Products.TotalPages > 1)
-    {
-        <nav aria-label="Pagination du catalogue" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item @(Model.Products.HasPreviousPage ? string.Empty : "disabled")">
-                    @if (Model.Products.HasPreviousPage)
-                    {
-                        <a class="page-link"
-                           asp-action="Index"
-                           asp-route-q="@Model.SearchTerm"
-                           asp-route-categoryId="@Model.CategoryId"
-                           asp-route-minPrice="@Model.MinPrice"
-                           asp-route-maxPrice="@Model.MaxPrice"
-                           asp-route-page="@(Model.Products.Page - 1)">Précédent</a>
-                    }
-                    else
-                    {
-                        <span class="page-link">Précédent</span>
-                    }
-                </li>
-
-                @for (var pageNumber = 1; pageNumber <= Model.Products.TotalPages; pageNumber++)
-                {
-                    <li class="page-item @(pageNumber == Model.Products.Page ? "active" : string.Empty)">
-                        <a class="page-link"
-                           asp-action="Index"
-                           asp-route-q="@Model.SearchTerm"
-                           asp-route-categoryId="@Model.CategoryId"
-                           asp-route-minPrice="@Model.MinPrice"
-                           asp-route-maxPrice="@Model.MaxPrice"
-                           asp-route-page="@pageNumber">@pageNumber</a>
-                    </li>
-                }
-
-                <li class="page-item @(Model.Products.HasNextPage ? string.Empty : "disabled")">
-                    @if (Model.Products.HasNextPage)
-                    {
-                        <a class="page-link"
-                           asp-action="Index"
-                           asp-route-q="@Model.SearchTerm"
-                           asp-route-categoryId="@Model.CategoryId"
-                           asp-route-minPrice="@Model.MinPrice"
-                           asp-route-maxPrice="@Model.MaxPrice"
-                           asp-route-page="@(Model.Products.Page + 1)">Suivant</a>
-                    }
-                    else
-                    {
-                        <span class="page-link">Suivant</span>
-                    }
-                </li>
-            </ul>
-            <p class="text-center text-muted small">Page @Model.Products.Page sur @Model.Products.TotalPages</p>
-        </nav>
-    }
-}

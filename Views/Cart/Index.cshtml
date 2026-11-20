@@ -3,85 +3,210 @@
     ViewData["Title"] = "Mon panier";
 }
 
-<div style="margin-bottom: 1rem;">
-    <h1 style="margin-bottom: 0.5rem;">Mon panier</h1>
-    @if (!Model.IsEmpty)
-    {
-        <p style="margin-bottom: 0;">@Model.TotalQuantity article(s) dans votre panier.</p>
-    }
-</div>
+<div class="shop-page cart-page">
+    <div class="tz-container">
+        <nav class="cat-breadcrumb" aria-label="Fil d'Ariane">
+            <a asp-controller="Home" asp-action="Index">Accueil</a>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>Mon panier</span>
+        </nav>
 
-<a asp-controller="Product" asp-action="Index" style="background: #6c7573; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none;">Continuer mes achats</a>
+        <header class="shop-head">
+            <div>
+                <span class="shop-eyebrow">Votre sélection</span>
+                <h1 class="shop-title">Mon panier</h1>
+                <p class="shop-lead">
+                    @if (Model.IsEmpty)
+                    {
+                        <text>Votre panier est prêt à accueillir votre prochaine trouvaille technologique.</text>
+                    }
+                    else
+                    {
+                        <text>@Model.TotalQuantity article(s) sélectionné(s). Vérifiez votre sélection avant de passer commande.</text>
+                    }
+                </p>
+            </div>
 
-@if (TempData["SuccessMessage"] is string successMessage)
-{
-    <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 0.375rem; padding: 0.75rem 1rem; margin: 0.5rem 0; font-size: 0.875rem;">@successMessage</div>
-}
+            <div class="shop-head-aside">
+                @if (!Model.IsEmpty)
+                {
+                    <span class="shop-count"><b>@Model.TotalQuantity</b> article(s)</span>
+                }
+                else
+                {
+                    <a class="shop-outline-btn" asp-controller="Product" asp-action="Index">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Parcourir le catalogue
+                    </a>
+                }
+            </div>
+        </header>
 
-@if (TempData["ErrorMessage"] is string errorMessage)
-{
-    <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 0.375rem; padding: 0.75rem 1rem; margin: 0.5rem 0; font-size: 0.875rem;">@errorMessage</div>
-}
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="auth-alert is-success" role="status">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="m5 12 4.2 4.2L19 6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>@successMessage</span>
+            </div>
+        }
 
-@if (Model.IsEmpty)
-{
-    <div style="max-width: 600px; margin: 1rem auto; padding: 2rem; text-align: center; border: 1px solid #dee2e9; border-radius: 0.375rem; background: #fff;">
-        <h2 style="margin: 0 0 0.5rem;">Votre panier est vide</h2>
-        <p style="color: #6c7573; margin: 0 0 0.75rem;">Ajoutez des produits depuis le catalogue pour commencer vos achats.</p>
-        <a asp-controller="Product" asp-action="Index" style="background: #007bff; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none;">Voir le catalogue</a>
-    </div>
-}
-else
-{
-    <div style="max-width: 1200px; margin: 1rem auto; display: flex; gap: 1rem;">
-        <div style="flex: 1;">
-            <div style="background: #fff; border: 1px solid #dee2e9; border-radius: 0.375rem; overflow: hidden;">
-                <table style="width: 100%; border-collapse: collapse; margin: 0;">
-                    <thead style="background: #f8f9fa;">
-                        <tr style="border-bottom: 1px solid #dee2e9;">
-                            <th scope="col" style="padding: 0.5rem; width: 30%;">Produit</th>
-                            <th scope="col" style="padding: 0.5rem; width: 15%; text-align: end; color: #333;">Prix unitaire</th>
-                            <th scope="col" style="padding: 0.5rem; width: 15%; text-align: center;">Quantité</th>
-                            <th scope="col" style="padding: 0.5rem; width: 15%; text-align: end; color: #333;">Total</th>
-                            <th scope="col" style="padding: 0.5rem; width: 15%;"><span style="color: #6c7573; font-size: 0.75rem;">Actions</span></th>
-                        </tr>
-                    </thead>
-                    <tbody>
+        @if (TempData["ErrorMessage"] is string errorMessage)
+        {
+            <div class="auth-alert is-error" role="alert">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" />
+                    <path d="M12 8v5M12 16.5h.01" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+                </svg>
+                <span>@errorMessage</span>
+            </div>
+        }
+
+        @if (Model.IsEmpty)
+        {
+            <div class="cart-empty">
+                <span class="cart-empty-icon" aria-hidden="true">
+                    <svg width="27" height="27" viewBox="0 0 24 24" fill="none">
+                        <path d="M6 8h12l-1 12H7L6 8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                        <path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                    </svg>
+                </span>
+                <h2>Votre panier est vide</h2>
+                <p>Ajoutez des produits depuis le catalogue pour composer votre commande. Vos articles sélectionnés apparaîtront ici.</p>
+                <div class="cart-empty-actions">
+                    <a class="cart-cta" asp-controller="Product" asp-action="Index">
+                        Découvrir le catalogue
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                    <a class="cart-cta-secondary" asp-controller="Home" asp-action="Index">Retour à l'accueil</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="cart-layout">
+                <section class="cart-items-card" aria-label="Articles de votre panier">
+                    <div class="cart-items-head">
+                        <span>Vos articles</span>
+                        <span>@Model.Items.Count référence(s)</span>
+                    </div>
+
+                    <div class="cart-list">
                         @foreach (var item in Model.Items)
                         {
-                            <tr style="border-bottom: 1px solid #eee;">
-                                <td style="padding: 0.5rem;">
-                                    <img src="@item.ImageUrl" alt="@item.ProductName" style="width: 50px; height: 50px; object-fit: cover; margin-right: 0.5rem;" />
-                                    <a href="#" style="color: #333; text-decoration: none; font-weight: bold;">@item.ProductName</a>
-                                </td>
-                                <td style="padding: 0.5rem; text-align: end; color: #333;">@item.UnitPrice.ToString("N2") €</td>
-                                <td style="padding: 0.5rem; text-align: center;">@item.Quantity</td>
-                                <td style="padding: 0.5rem; text-align: end; color: #333;">@item.LineTotal.ToString("N2") €</td>
-                                <td style="padding: 0.5rem;">
-                                    <a href="#" style="color: #007bff; font-size: 0.875rem; text-decoration: none;">Modifier</a>
-                                    <form asp-action="Remove" method="post" style="display: inline;">
-                                        <button type="submit" style="color: #dc3545; font-size: 0.875rem; text-decoration: none;">Supprimer</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                            var stockLabel = item.Stock <= 0
+                                ? "Rupture de stock"
+                                : item.Stock == 1
+                                    ? "1 unité en stock"
+                                    : $"{item.Stock} unités en stock";
 
-        <div style="flex: 0 0 30%; max-width: 30%;">
-            <div style="background: #fff; border: 1px solid #dee2e9; border-radius: 0.375rem; padding: 1rem; margin-top: 1rem;">
-                <h2 style="margin: 0 0 0.75rem;">Récapitulatif</h2>
-                <dl style="margin: 0;">
-                    <dt style="font-weight: normal; margin-bottom: 0.25rem;">Sous-total</dt>
-                    <dd style="text-align: end; margin-bottom: 0.5rem;">@Model.Subtotal.ToString("N2") €</dd>
-                    <dt style="margin-bottom: 0.25rem;">Total</dt>
-                    <dd style="font-weight: bold; text-align: end; margin-bottom: 0;">@Model.Total.ToString("N2") €</dd>
-                </dl>
-                <a asp-controller="Order" asp-action="Checkout" style="width: 100%; display: block; padding: 0.5rem; background: #007bff; color: white; border: none; border-radius: 0.25rem; text-decoration: none; font-size: 0.875rem;">Continuer vers la commande</a>
-                <p style="color: #6c7573; font-size: 0.75rem; margin-top: 0.75rem;">Le stock et le total seront vérifiés avant validation.</p>
+                            <article class="cart-item">
+                                <a class="cart-item-media" asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId"
+                                   aria-label="Voir la fiche de @item.ProductName">
+                                    <img src="@item.ImageUrl" alt="@item.ProductName" loading="lazy" decoding="async" />
+                                </a>
+
+                                <div class="cart-item-main">
+                                    <span class="cart-item-cat">Produit TechZone</span>
+                                    <h2 class="cart-item-name">
+                                        <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">@item.ProductName</a>
+                                    </h2>
+                                    <div class="cart-item-meta">
+                                        <span>@item.UnitPrice.ToString("N2") € / unité</span>
+                                        <span class="cart-item-stock @(item.Stock > 0 ? "is-in" : "is-out")">@stockLabel</span>
+                                    </div>
+                                </div>
+
+                                <div class="cart-item-controls">
+                                    <form class="cart-qty" asp-action="UpdateQuantity" method="post">
+                                        <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                        <button class="cart-qty-btn" type="submit" name="quantity" value="@(item.Quantity - 1)"
+                                                disabled="@(item.Quantity <= 1)"
+                                                aria-label="Diminuer la quantité de @item.ProductName">−</button>
+                                        <span class="cart-qty-value" aria-live="polite">@item.Quantity</span>
+                                        <button class="cart-qty-btn" type="submit" name="quantity" value="@(item.Quantity + 1)"
+                                                disabled="@(item.Quantity >= item.Stock)"
+                                                aria-label="Augmenter la quantité de @item.ProductName">+</button>
+                                    </form>
+
+                                    <span class="cart-line">@item.LineTotal.ToString("N2") €</span>
+
+                                    <form class="cart-remove-form" asp-action="Remove" method="post">
+                                        <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                        <button class="cart-remove" type="submit" aria-label="Retirer @item.ProductName du panier">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                <path d="M5 7h14M10 7V5.5A1.5 1.5 0 0 1 11.5 4h1A1.5 1.5 0 0 1 14 5.5V7m-6.5 0 .7 11.1A2 2 0 0 0 10.2 20h3.6a2 2 0 0 0 2-1.9L16.5 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                            Retirer
+                                        </button>
+                                    </form>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </section>
+
+                <aside class="cart-summary" aria-label="Récapitulatif du panier">
+                    <h2 class="cart-summary-title">Récapitulatif</h2>
+
+                    <div class="cart-summary-lines">
+                        <div class="cart-summary-row">
+                            <span>Sous-total (@Model.TotalQuantity article(s))</span>
+                            <span>@Model.Subtotal.ToString("N2") €</span>
+                        </div>
+                        <div class="cart-summary-row">
+                            <span>Livraison</span>
+                            <span>Étape suivante</span>
+                        </div>
+                        <div class="cart-summary-row is-total">
+                            <span>Total</span>
+                            <span>@Model.Total.ToString("N2") €</span>
+                        </div>
+                    </div>
+
+                    <a class="cart-cta" asp-controller="Order" asp-action="Checkout">
+                        Passer la commande
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+
+                    <a class="cart-cta-secondary" asp-controller="Product" asp-action="Index">Continuer mes achats</a>
+
+                    <p class="cart-summary-note">Le stock et le total seront vérifiés avant la validation de la commande.</p>
+
+                    <ul class="cart-trust">
+                        <li>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <rect x="5" y="10.5" width="14" height="9.5" rx="2.6" stroke="currentColor" stroke-width="1.8" />
+                                <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                            </svg>
+                            Paiement sécurisé
+                        </li>
+                        <li>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M12 3.5 5 6.5v5.2c0 4.2 2.9 7.4 7 8.8 4.1-1.4 7-4.6 7-8.8V6.5l-7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                                <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Stock vérifié en temps réel
+                        </li>
+                        <li>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                                <path d="M4 11h16M8 15h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                            </svg>
+                            Suivi de commande disponible
+                        </li>
+                    </ul>
+                </aside>
             </div>
-        </div>
+        }
     </div>
-}
+</div>
