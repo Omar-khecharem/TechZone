@@ -23,8 +23,18 @@ namespace TechZone.Controllers
                 minPrice: null,
                 maxPrice: null,
                 page: 1,
-                pageSize: 4);
+                pageSize: 12);
             var categories = await _productService.GetCategoriesAsync();
+            var categoryViewModels = categories
+                .Select(category => new CategoryFilterViewModel
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    Description = category.Description
+                })
+                .ToList();
+
+            ViewData["TechZoneCategories"] = categoryViewModels;
 
             return View(new HomeViewModel
             {
@@ -38,13 +48,7 @@ namespace TechZone.Controllers
                         CategoryName = product.Category.Name
                     })
                     .ToList(),
-                Categories = categories
-                    .Select(category => new CategoryFilterViewModel
-                    {
-                        Id = category.Id,
-                        Name = category.Name
-                    })
-                    .ToList()
+                Categories = categoryViewModels
             });
         }
 

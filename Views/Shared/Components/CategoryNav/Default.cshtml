@@ -1,0 +1,51 @@
+@model IReadOnlyList<Category>
+@{
+    var showPrimaryLinks = ViewData["ShowPrimaryLinks"] as bool? ?? true;
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? string.Empty;
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? string.Empty;
+    int? currentCategoryId = int.TryParse(Context.Request.Query["categoryId"], out var parsedCategoryId)
+        ? parsedCategoryId
+        : null;
+    var isHome = string.Equals(currentController, "Home", StringComparison.OrdinalIgnoreCase)
+        && string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase);
+    var isCatalog = string.Equals(currentController, "Product", StringComparison.OrdinalIgnoreCase)
+        && string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase);
+}
+
+<nav class="tz-nav" aria-label="Navigation principale">
+    @if (showPrimaryLinks)
+    {
+        <a asp-area="" asp-controller="Home" asp-action="Index" class="tz-nav-link @(isHome ? "is-active" : null)">Accueil</a>
+        <a asp-area="" asp-controller="Product" asp-action="Index" class="tz-nav-link @(isCatalog && !currentCategoryId.HasValue ? "is-active" : null)">Catalogue</a>
+    }
+
+    <details class="tz-nav-drop">
+        <summary class="tz-nav-link tz-nav-drop-toggle @(isCatalog && currentCategoryId.HasValue ? "is-active" : null)">
+            Catégories
+            <svg class="tz-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </summary>
+        <div class="tz-nav-menu">
+            @if (Model is { Count: > 0 })
+            {
+                foreach (var category in Model)
+                {
+                    <a asp-area="" asp-controller="Product" asp-action="Index" asp-route-categoryId="@category.Id" class="tz-nav-menu-link @(currentCategoryId == category.Id ? "is-active" : null)">
+                        <span>@category.Name</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                }
+                <span class="tz-nav-menu-sep" aria-hidden="true"></span>
+            }
+            <a asp-area="" asp-controller="Product" asp-action="Index" class="tz-nav-menu-link tz-nav-menu-all">
+                Tout le catalogue
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </a>
+        </div>
+    </details>
+</nav>

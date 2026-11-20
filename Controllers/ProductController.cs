@@ -87,6 +87,16 @@ namespace TechZone.Controllers
                 categoryId = null;
             }
 
+            var categoryViewModels = categories
+                .Select(category => new CategoryFilterViewModel
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    Description = category.Description
+                })
+                .ToList();
+            ViewData["TechZoneCategories"] = categoryViewModels;
+
             var products = await _productService.GetProductsAsync(
                 q,
                 categoryId,
@@ -101,13 +111,7 @@ namespace TechZone.Controllers
                 CategoryId = categoryId,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
-                Categories = categories
-                    .Select(category => new CategoryFilterViewModel
-                    {
-                        Id = category.Id,
-                        Name = category.Name
-                    })
-                    .ToList(),
+                Categories = categoryViewModels,
                 Products = new PagedResult<ProductCardViewModel>
                 {
                     Items = products.Items
