@@ -38,7 +38,7 @@ namespace TechZone.Controllers
         {
             if (User.Identity?.IsAuthenticated == true)
             {
-                return RedirectToAction(nameof(Profile));
+                return RedirectAuthenticatedUser();
             }
 
             return View();
@@ -87,7 +87,7 @@ namespace TechZone.Controllers
         {
             if (User.Identity?.IsAuthenticated == true)
             {
-                return RedirectToAction(nameof(Profile));
+                return RedirectAuthenticatedUser();
             }
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -114,6 +114,14 @@ namespace TechZone.Controllers
 
             if (result.Succeeded)
             {
+                var user = await _signInManager.UserManager.FindByEmailAsync(model.Email.Trim());
+
+                if (user is not null &&
+                    await _signInManager.UserManager.IsInRoleAsync(user, AdminDefaults.AdminRoleName))
+                {
+                    return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+                }
+
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
@@ -146,8 +154,19 @@ namespace TechZone.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         public async Task<IActionResult> Profile()
         {
+            if (User.IsInRole(AdminDefaults.AdminRoleName))
+            {
+                return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+            }
+
             var user = await _accountService.GetByIdAsync(CurrentUserId);
 
             if (user is null)
@@ -235,6 +254,16 @@ namespace TechZone.Controllers
 
         private string CurrentUserId =>
             User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+
+        private IActionResult RedirectAuthenticatedUser()
+        {
+            if (User.IsInRole(AdminDefaults.AdminRoleName))
+            {
+                return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+            }
+
+            return RedirectToAction(nameof(Profile));
+        }
 
         private static string? GetProfilePictureValidationError(IFormFile file)
         {

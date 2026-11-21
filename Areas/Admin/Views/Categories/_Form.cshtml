@@ -1,0 +1,16 @@
+@model AdminCategoryFormViewModel
+
+<div class="adm-form-grid">
+    <div class="adm-field is-full">
+        <label class="adm-label" asp-for="Name"></label>
+        <input class="adm-input" asp-for="Name" placeholder="Ex. Accessoires" />
+        <span class="adm-field-error" asp-validation-for="Name"></span>
+    </div>
+
+    <div class="adm-field is-full">
+        <label class="adm-label" asp-for="Description"></label>
+        <textarea class="adm-input adm-textarea" asp-for="Description" rows="4"
+                  placeholder="Décrivez les produits regroupés dans cette catégorie..."></textarea>
+        <span class="adm-field-error" asp-validation-for="Description"></span>
+    </div>
+</div>

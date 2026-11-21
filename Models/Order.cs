@@ -17,7 +17,7 @@ namespace TechZone.Models
 
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
-        [Range(typeof(decimal), "0", "99999999.99")]
+        [Range(typeof(decimal), "0", "99999999.99", ParseLimitsInInvariantCulture = true)]
         public decimal TotalAmount { get; set; }
 
         public OrderStatus Status { get; set; } = OrderStatus.Confirmed;

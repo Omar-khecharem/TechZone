@@ -1,0 +1,42 @@
+@model AdminProductFormViewModel
+
+<div class="adm-page-head">
+    <a class="adm-back" asp-action="Index">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m15 6-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Retour aux produits
+    </a>
+</div>
+
+<div class="adm-card">
+    <header class="adm-card-head">
+        <div>
+            <h2 class="adm-card-title">Modifier « @Model.Name »</h2>
+            <p class="adm-card-sub">Les changements sont visibles immédiatement en boutique</p>
+        </div>
+    </header>
+
+    <form class="adm-form" asp-area="Admin" asp-controller="Products" asp-action="Edit"
+          method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ExistingImageUrl" />
+        <div asp-validation-summary="ModelOnly" class="adm-validation"></div>
+
+        <partial name="_Form" model="Model" />
+
+        <div class="adm-form-actions">
+            <button class="adm-btn is-primary" type="submit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="m5 12 4.2 4.2L19 6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Enregistrer les modifications
+            </button>
+            <a class="adm-btn" asp-action="Index">Annuler</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

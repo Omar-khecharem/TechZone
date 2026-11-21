@@ -224,6 +224,18 @@ input:focus-visible,
   transform: rotate(-4deg);
 }
 
+.tz-brand-logo {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  transition: transform 260ms ease;
+}
+
+.tz-brand:hover .tz-brand-logo {
+  transform: rotate(-4deg);
+}
+
 .tz-brand-text {
   font-family: var(--tz-sans);
   font-size: 1.28rem;
@@ -871,6 +883,11 @@ details[open] > summary .tz-caret {
 
 .tz-footer-brand .tz-brand-symbol rect {
   fill: var(--tz-accent);
+}
+
+.tz-footer-brand .tz-brand-logo {
+  width: 36px;
+  height: 36px;
 }
 
 .tz-footer-brand .tz-brand-text span {

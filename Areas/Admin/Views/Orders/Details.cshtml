@@ -1,0 +1,166 @@
+@model AdminOrderDetailsViewModel
+
+<div class="adm-page-head">
+    <a class="adm-back" asp-action="Index">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m15 6-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Retour aux commandes
+    </a>
+</div>
+
+<section class="adm-grid is-detail">
+    <article class="adm-card">
+        <header class="adm-card-head">
+            <div>
+                <h2 class="adm-card-title">@Model.OrderNumber</h2>
+                <p class="adm-card-sub">Passée le @Model.OrderDate.ToLocalTime().ToString("dd/MM/yyyy à HH:mm")</p>
+            </div>
+            <span class="adm-badge @Model.StatusBadgeClass">@Model.StatusLabel</span>
+        </header>
+
+        <div class="adm-detail-grid">
+            <div>
+                <span class="adm-detail-label">Montant total</span>
+                <strong class="adm-detail-value">@Model.TotalAmount.ToString("N2") €</strong>
+            </div>
+            <div>
+                <span class="adm-detail-label">Paiement</span>
+                <strong class="adm-detail-value">@Model.PaymentMethodLabel</strong>
+            </div>
+            <div>
+                <span class="adm-detail-label">Statut paiement</span>
+                <strong class="adm-detail-value">@Model.PaymentStatusLabel</strong>
+            </div>
+            <div>
+                <span class="adm-detail-label">Articles</span>
+                <strong class="adm-detail-value">@Model.Items.Sum(item => item.Quantity)</strong>
+            </div>
+        </div>
+    </article>
+
+    <article class="adm-card">
+        <header class="adm-card-head">
+            <div>
+                <h2 class="adm-card-title">Client</h2>
+                <p class="adm-card-sub">Compte associé à la commande</p>
+            </div>
+        </header>
+
+        <div class="adm-customer-card">
+            <span class="adm-avatar-sm is-lg">@(string.IsNullOrWhiteSpace(Model.CustomerName) ? "?" : Model.CustomerName.Substring(0, 1).ToUpperInvariant())</span>
+            <div>
+                <a class="adm-customer-name" asp-controller="Customers" asp-action="Details"
+                   asp-route-id="@Model.CustomerId">@Model.CustomerName</a>
+                <span class="adm-order-meta">@Model.CustomerEmail</span>
+                @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
+                {
+                    <span class="adm-order-meta">@Model.CustomerPhone</span>
+                }
+            </div>
+        </div>
+
+        <a class="adm-btn is-block" asp-controller="Customers" asp-action="Details" asp-route-id="@Model.CustomerId">
+            Voir la fiche client
+        </a>
+    </article>
+</section>
+
+<article class="adm-card">
+    <header class="adm-card-head">
+        <div>
+            <h2 class="adm-card-title">Articles commandés</h2>
+            <p class="adm-card-sub">Détail des produits et quantités</p>
+        </div>
+    </header>
+
+    <div class="adm-table-wrap">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th class="is-end">Prix unitaire</th>
+                    <th class="is-end">Quantité</th>
+                    <th class="is-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td><span class="adm-product-name">@item.ProductName</span></td>
+                        <td class="is-end">@item.UnitPrice.ToString("N2") €</td>
+                        <td class="is-end">@item.Quantity</td>
+                        <td class="is-end">@item.LineTotal.ToString("N2") €</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="is-end">Total</td>
+                    <td class="is-end"><strong>@Model.TotalAmount.ToString("N2") €</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</article>
+
+<section class="adm-grid is-detail">
+    <article class="adm-card">
+        <header class="adm-card-head">
+            <div>
+                <h2 class="adm-card-title">Adresse de livraison</h2>
+                <p class="adm-card-sub">Informations d'expédition</p>
+            </div>
+        </header>
+
+        <address class="adm-address">
+            <strong>@Model.ShippingFullName</strong>
+            <span>@Model.ShippingAddress</span>
+            <span>@Model.ShippingPostalCode @Model.ShippingCity</span>
+            <span>@Model.ShippingCountry</span>
+            <span>Tél. : @Model.ShippingPhone</span>
+        </address>
+    </article>
+
+    <article class="adm-card">
+        <header class="adm-card-head">
+            <div>
+                <h2 class="adm-card-title">Mettre à jour la commande</h2>
+                <p class="adm-card-sub">Statut de traitement et de paiement</p>
+            </div>
+        </header>
+
+        <form class="adm-form" asp-action="Update" asp-route-id="@Model.Id" method="post">
+            <div class="adm-form-grid">
+                <div class="adm-field">
+                    <label class="adm-label" for="status">Statut de la commande</label>
+                    <select class="adm-input" id="status" name="status">
+                        @foreach (var status in Enum.GetValues<OrderStatus>())
+                        {
+                            <option value="@status" selected="@(status == Model.Status ? "selected" : null)">
+                                @OrderLabels.GetStatusLabel(status)
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="adm-field">
+                    <label class="adm-label" for="paymentStatus">Statut du paiement</label>
+                    <select class="adm-input" id="paymentStatus" name="paymentStatus">
+                        @foreach (var paymentStatus in Enum.GetValues<PaymentStatus>())
+                        {
+                            <option value="@paymentStatus" selected="@(paymentStatus == Model.PaymentStatus ? "selected" : null)">
+                                @OrderLabels.GetPaymentStatusLabel(paymentStatus)
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="adm-form-actions">
+                <button class="adm-btn is-primary" type="submit">Enregistrer</button>
+            </div>
+        </form>
+    </article>
+</section>

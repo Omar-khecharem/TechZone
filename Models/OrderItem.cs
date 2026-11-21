@@ -18,7 +18,7 @@ namespace TechZone.Models
         [StringLength(200)]
         public string ProductName { get; set; } = string.Empty;
 
-        [Range(typeof(decimal), "0", "99999999.99")]
+        [Range(typeof(decimal), "0", "99999999.99", ParseLimitsInInvariantCulture = true)]
         public decimal UnitPrice { get; set; }
 
         [Range(1, 999)]

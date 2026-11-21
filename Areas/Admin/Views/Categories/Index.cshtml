@@ -1,0 +1,79 @@
+@model AdminCategoryListViewModel
+
+<div class="adm-page-head">
+    <div class="adm-page-head-copy">
+        <span class="adm-card-sub">@Model.Categories.Count catégorie(s) au total</span>
+    </div>
+
+    <a class="adm-btn is-primary" asp-action="Create">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        Nouvelle catégorie
+    </a>
+</div>
+
+<div class="adm-card is-flush">
+    @if (Model.Categories.Count == 0)
+    {
+        <div class="adm-empty">
+            <span class="adm-empty-icon" aria-hidden="true">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 5.5h6v6H4zM14 5.5h6v6h-6zM4 15.5h6v6H4zM14 15.5h6v6h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                </svg>
+            </span>
+            <h3>Aucune catégorie</h3>
+            <p>Créez votre première catégorie pour organiser le catalogue.</p>
+            <a class="adm-btn is-primary" asp-action="Create">Créer une catégorie</a>
+        </div>
+    }
+    else
+    {
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Catégorie</th>
+                        <th>Description</th>
+                        <th class="is-end">Produits</th>
+                        <th class="is-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <tr>
+                            <td><span class="adm-product-name">@category.Name</span></td>
+                            <td class="adm-cell-muted">
+                                @(string.IsNullOrWhiteSpace(category.Description) ? "—" : category.Description)
+                            </td>
+                            <td class="is-end">
+                                <a class="adm-count-pill" asp-controller="Products" asp-action="Index"
+                                   asp-route-categoryId="@category.Id">@category.ProductCount</a>
+                            </td>
+                            <td class="is-end">
+                                <div class="adm-row-actions">
+                                    <a class="adm-icon-btn" asp-action="Edit" asp-route-id="@category.Id"
+                                       aria-label="Modifier @category.Name">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                                            <path d="m13.5 6.5 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                                        </svg>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@category.Id" method="post"
+                                          onsubmit="return confirm('Supprimer la catégorie « @category.Name » ?');">
+                                        <button class="adm-icon-btn is-danger" type="submit" aria-label="Supprimer @category.Name">
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                <path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

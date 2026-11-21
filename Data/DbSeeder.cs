@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TechZone.Models;
 
@@ -5,10 +6,16 @@ namespace TechZone.Data
 {
     public static class DbSeeder
     {
-        public static async Task SeedAsync(ApplicationDbContext dbContext)
+        public static async Task SeedAsync(
+            ApplicationDbContext dbContext,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
+            await SeedAdminAsync(userManager, roleManager);
+
             if (await dbContext.Products.AnyAsync())
             {
+                await SeedDemoOrdersAsync(dbContext, userManager);
                 return;
             }
 
@@ -183,6 +190,168 @@ namespace TechZone.Data
                 });
 
             await dbContext.SaveChangesAsync();
+
+            await SeedDemoOrdersAsync(dbContext, userManager);
+        }
+
+        private static async Task SeedDemoOrdersAsync(
+            ApplicationDbContext dbContext,
+            UserManager<ApplicationUser> userManager)
+        {
+            if (await dbContext.Orders.AnyAsync())
+            {
+                return;
+            }
+
+            var products = await dbContext.Products.ToListAsync();
+
+            if (products.Count == 0)
+            {
+                return;
+            }
+
+            var demoCustomers = new[]
+            {
+                new { FirstName = "Amine", LastName = "Ben Salah", Email = "amine.bensalah@example.com", City = "Tunis" },
+                new { FirstName = "Sarra", LastName = "Trabelsi", Email = "sarra.trabelsi@example.com", City = "Sfax" },
+                new { FirstName = "Youssef", LastName = "Khelifi", Email = "youssef.khelifi@example.com", City = "Sousse" },
+                new { FirstName = "Ines", LastName = "Gharbi", Email = "ines.gharbi@example.com", City = "Nabeul" },
+                new { FirstName = "Mehdi", LastName = "Ayari", Email = "mehdi.ayari@example.com", City = "Bizerte" }
+            };
+
+            var customers = new List<(ApplicationUser User, string City)>();
+
+            foreach (var demo in demoCustomers)
+            {
+                var user = await userManager.FindByEmailAsync(demo.Email);
+
+                if (user is null)
+                {
+                    user = new ApplicationUser
+                    {
+                        FirstName = demo.FirstName,
+                        LastName = demo.LastName,
+                        Email = demo.Email,
+                        UserName = demo.Email,
+                        EmailConfirmed = true
+                    };
+
+                    var createResult = await userManager.CreateAsync(user, "Client1234");
+
+                    if (!createResult.Succeeded)
+                    {
+                        continue;
+                    }
+                }
+
+                customers.Add((user, demo.City));
+            }
+
+            if (customers.Count == 0)
+            {
+                return;
+            }
+
+            var random = new Random(2026);
+            var statuses = new[]
+            {
+                OrderStatus.Confirmed,
+                OrderStatus.Shipped,
+                OrderStatus.Delivered,
+                OrderStatus.Delivered,
+                OrderStatus.Cancelled
+            };
+
+            var now = DateTime.UtcNow;
+            const int demoOrderCount = 32;
+
+            for (var index = 0; index < demoOrderCount; index++)
+            {
+                var (customer, city) = customers[random.Next(customers.Count)];
+                var orderDate = now
+                    .AddDays(-random.Next(0, 330))
+                    .AddHours(-random.Next(0, 20))
+                    .AddMinutes(-random.Next(0, 60));
+                var status = statuses[random.Next(statuses.Length)];
+                var selectedProducts = products
+                    .OrderBy(_ => random.Next())
+                    .Take(random.Next(1, 4))
+                    .ToList();
+
+                var order = new Order
+                {
+                    OrderNumber = $"TZ-DEMO-{index + 1:D4}",
+                    UserId = customer.Id,
+                    OrderDate = orderDate,
+                    Status = status,
+                    PaymentMethod = PaymentMethod.CashOnDelivery,
+                    PaymentStatus = status switch
+                    {
+                        OrderStatus.Delivered => PaymentStatus.Paid,
+                        OrderStatus.Cancelled => PaymentStatus.Failed,
+                        _ => PaymentStatus.Pending
+                    },
+                    ShippingFullName = $"{customer.FirstName} {customer.LastName}",
+                    ShippingPhone = "+216 00 000 000",
+                    ShippingAddress = "12 rue de la Technologie",
+                    ShippingCity = city,
+                    ShippingPostalCode = "1000",
+                    ShippingCountry = "Tunisie"
+                };
+
+                foreach (var product in selectedProducts)
+                {
+                    order.Items.Add(new OrderItem
+                    {
+                        ProductId = product.Id,
+                        ProductName = product.Name,
+                        UnitPrice = product.Price,
+                        Quantity = random.Next(1, 3)
+                    });
+                }
+
+                order.TotalAmount = order.Items.Sum(item => item.UnitPrice * item.Quantity);
+
+                dbContext.Orders.Add(order);
+            }
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        private static async Task SeedAdminAsync(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
+        {
+            if (!await roleManager.RoleExistsAsync(AdminDefaults.AdminRoleName))
+            {
+                await roleManager.CreateAsync(new IdentityRole(AdminDefaults.AdminRoleName));
+            }
+
+            var admin = await userManager.FindByEmailAsync(AdminDefaults.AdminEmail);
+
+            if (admin is null)
+            {
+                admin = new ApplicationUser
+                {
+                    FirstName = AdminDefaults.AdminFirstName,
+                    LastName = AdminDefaults.AdminLastName,
+                    Email = AdminDefaults.AdminEmail,
+                    UserName = AdminDefaults.AdminEmail,
+                    EmailConfirmed = true
+                };
+
+                var createResult = await userManager.CreateAsync(admin, AdminDefaults.AdminPassword);
+
+                if (!createResult.Succeeded)
+                {
+                    return;
+                }
+            }
+
+            if (!await userManager.IsInRoleAsync(admin, AdminDefaults.AdminRoleName))
+            {
+                await userManager.AddToRoleAsync(admin, AdminDefaults.AdminRoleName);
+            }
         }
     }
 }

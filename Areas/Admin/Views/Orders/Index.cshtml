@@ -1,0 +1,139 @@
+@model AdminOrderListViewModel
+
+<nav class="adm-tabs" aria-label="Filtrer par statut">
+    <a class="@(Model.Status is null ? "adm-tab is-active" : "adm-tab")" asp-action="Index"
+       asp-route-search="@Model.Search">
+        Toutes <span>@Model.TotalCount</span>
+    </a>
+
+    @foreach (var option in Model.StatusOptions)
+    {
+        <a class="@(Model.Status == option.Status ? "adm-tab is-active" : "adm-tab")" asp-action="Index"
+           asp-route-search="@Model.Search" asp-route-status="@option.Status">
+            @option.Label <span>@option.Count</span>
+        </a>
+    }
+</nav>
+
+<div class="adm-page-head">
+    <form class="adm-filters" method="get" asp-action="Index">
+        @if (Model.Status.HasValue)
+        {
+            <input type="hidden" name="status" value="@Model.Status" />
+        }
+
+        <div class="adm-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2" />
+                <path d="m19.5 19.5-3.8-3.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <input class="adm-input" type="search" name="search" value="@Model.Search"
+                   placeholder="N° de commande, client ou e-mail..." />
+        </div>
+
+        <button class="adm-btn is-primary" type="submit">Rechercher</button>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Search))
+        {
+            <a class="adm-btn" asp-action="Index" asp-route-status="@Model.Status">Réinitialiser</a>
+        }
+    </form>
+</div>
+
+<div class="adm-card is-flush">
+    @if (Model.Orders.Items.Count == 0)
+    {
+        <div class="adm-empty">
+            <span class="adm-empty-icon" aria-hidden="true">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                    <path d="M7 3h10l3 4v13H4V7l3-4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                    <path d="M4 7h16M9 11.5h6M9 15.5h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                </svg>
+            </span>
+            <h3>Aucune commande trouvée</h3>
+            <p>Essayez un autre filtre ou une autre recherche.</p>
+        </div>
+    }
+    else
+    {
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Commande</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th class="is-end">Articles</th>
+                        <th class="is-end">Montant</th>
+                        <th>Statut</th>
+                        <th>Paiement</th>
+                        <th class="is-end"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.Orders.Items)
+                    {
+                        <tr>
+                            <td><span class="adm-order-number">@order.OrderNumber</span></td>
+                            <td>
+                                <span class="adm-customer-name">@order.CustomerName</span>
+                                <span class="adm-order-meta">@order.CustomerEmail</span>
+                            </td>
+                            <td>@order.OrderDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="is-end">@order.ItemCount</td>
+                            <td class="is-end">@order.TotalAmount.ToString("N2") €</td>
+                            <td><span class="adm-badge @order.StatusBadgeClass">@order.StatusLabel</span></td>
+                            <td><span class="adm-pay-badge">@order.PaymentStatusLabel</span></td>
+                            <td class="is-end">
+                                <a class="adm-icon-btn" asp-action="Details" asp-route-id="@order.Id"
+                                   aria-label="Voir la commande @order.OrderNumber">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.Orders.TotalPages > 1)
+        {
+            <nav class="adm-pagination" aria-label="Pagination des commandes">
+                @if (Model.Orders.HasPreviousPage)
+                {
+                    <a class="adm-page-btn" asp-action="Index" asp-route-search="@Model.Search"
+                       asp-route-status="@Model.Status" asp-route-page="@(Model.Orders.Page - 1)">Précédent</a>
+                }
+                else
+                {
+                    <span class="adm-page-btn is-disabled">Précédent</span>
+                }
+
+                @for (var pageNumber = 1; pageNumber <= Model.Orders.TotalPages; pageNumber++)
+                {
+                    if (pageNumber == Model.Orders.Page)
+                    {
+                        <span class="adm-page-btn is-current" aria-current="page">@pageNumber</span>
+                    }
+                    else
+                    {
+                        <a class="adm-page-btn" asp-action="Index" asp-route-search="@Model.Search"
+                           asp-route-status="@Model.Status" asp-route-page="@pageNumber">@pageNumber</a>
+                    }
+                }
+
+                @if (Model.Orders.HasNextPage)
+                {
+                    <a class="adm-page-btn" asp-action="Index" asp-route-search="@Model.Search"
+                       asp-route-status="@Model.Status" asp-route-page="@(Model.Orders.Page + 1)">Suivant</a>
+                }
+                else
+                {
+                    <span class="adm-page-btn is-disabled">Suivant</span>
+                }
+            </nav>
+        }
+    }
+</div>

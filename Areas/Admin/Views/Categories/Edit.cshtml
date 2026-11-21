@@ -1,0 +1,35 @@
+@model AdminCategoryFormViewModel
+
+<div class="adm-page-head">
+    <a class="adm-back" asp-action="Index">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m15 6-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Retour aux catégories
+    </a>
+</div>
+
+<div class="adm-card">
+    <header class="adm-card-head">
+        <div>
+            <h2 class="adm-card-title">Modifier « @Model.Name »</h2>
+            <p class="adm-card-sub">Mettez à jour le nom et la description</p>
+        </div>
+    </header>
+
+    <form class="adm-form" asp-area="Admin" asp-controller="Categories" asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="adm-validation"></div>
+
+        <partial name="_Form" model="Model" />
+
+        <div class="adm-form-actions">
+            <button class="adm-btn is-primary" type="submit">Enregistrer les modifications</button>
+            <a class="adm-btn" asp-action="Index">Annuler</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
