@@ -9,6 +9,11 @@ namespace TechZone.Interfaces
 
         Task<ApplicationUser?> GetByIdAsync(string userId);
 
-        Task<IdentityResult> UpdateProfileAsync(string userId, string firstName, string lastName, string? phoneNumber);
+        Task<IdentityResult> UpdateProfileAsync(
+            string userId,
+            string firstName,
+            string lastName,
+            string? phoneNumber,
+            string? profilePictureUrl);
     }
 }

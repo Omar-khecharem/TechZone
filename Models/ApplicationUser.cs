@@ -13,6 +13,9 @@ namespace TechZone.Models
         [StringLength(50)]
         public string LastName { get; set; } = string.Empty;
 
+        [StringLength(500)]
+        public string? ProfilePictureUrl { get; set; }
+
         public Cart? Cart { get; set; }
 
         public ICollection<Order> Orders { get; set; } = new List<Order>();

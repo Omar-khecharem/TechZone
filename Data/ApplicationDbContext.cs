@@ -27,6 +27,11 @@ namespace TechZone.Data
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<ApplicationUser>(entity =>
+            {
+                entity.Property(user => user.ProfilePictureUrl).HasMaxLength(500);
+            });
+
             builder.Entity<Category>(entity =>
             {
                 entity.HasIndex(category => category.Name).IsUnique();

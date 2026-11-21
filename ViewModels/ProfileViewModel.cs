@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace TechZone.ViewModels
 {
@@ -21,6 +22,11 @@ namespace TechZone.ViewModels
         [StringLength(30, ErrorMessage = "Le numéro de téléphone ne doit pas dépasser 30 caractères.")]
         [Display(Name = "Téléphone")]
         public string? PhoneNumber { get; set; }
+
+        public string? ProfilePictureUrl { get; set; }
+
+        [Display(Name = "Photo de profil")]
+        public IFormFile? ProfilePicture { get; set; }
 
         public IReadOnlyList<OrderSummaryViewModel> RecentOrders { get; set; } =
             Array.Empty<OrderSummaryViewModel>();

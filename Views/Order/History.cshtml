@@ -3,80 +3,179 @@
     ViewData["Title"] = "Mes commandes";
 }
 
-<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
-    <div>
-        <h1 class="h2 mb-1">Mes commandes</h1>
-        @if (!Model.IsEmpty)
-        {
-            <p class="text-muted mb-0">
-                @Model.TotalCount commande(s) au total.
-            </p>
-        }
-    </div>
-    <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary">Continuer mes achats</a>
-</div>
+<div class="shop-page orders-page">
+    <div class="tz-container">
+        <nav class="cat-breadcrumb" aria-label="Fil d'Ariane">
+            <a asp-controller="Home" asp-action="Index">Accueil</a>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <a asp-controller="Account" asp-action="Profile">Mon profil</a>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>Mes commandes</span>
+        </nav>
 
-@if (Model.IsEmpty)
-{
-    <div class="text-center border rounded bg-white py-5">
-        <h2 class="h4">Aucune commande pour le moment</h2>
-        <p class="text-muted">Vous n'avez encore passé aucune commande.</p>
-        <a asp-controller="Product" asp-action="Index" class="btn btn-primary">Découvrir le catalogue</a>
-    </div>
-}
-else
-{
-    <div class="table-responsive bg-white border rounded shadow-sm">
-        <table class="table align-middle mb-0">
-            <thead>
-                <tr>
-                    <th scope="col">Numéro</th>
-                    <th scope="col">Date</th>
-                    <th scope="col" class="text-end">Montant total</th>
-                    <th scope="col">Statut</th>
-                    <th scope="col"><span class="visually-hidden">Actions</span></th>
-                </tr>
-            </thead>
-            <tbody>
+        <header class="shop-head">
+            <div>
+                <span class="shop-eyebrow">Espace membre</span>
+                <h1 class="shop-title">Mes commandes</h1>
+                <p class="shop-lead">
+                    @if (Model.IsEmpty)
+                    {
+                        <text>Retrouvez ici l'historique de vos achats TechZone dès votre première commande.</text>
+                    }
+                    else
+                    {
+                        <text>Suivez l'état de vos commandes et consultez le détail de chaque achat.</text>
+                    }
+                </p>
+            </div>
+
+            <div class="shop-head-aside">
+                @if (!Model.IsEmpty)
+                {
+                    <span class="shop-count"><b>@Model.TotalCount</b> commande(s)</span>
+                }
+                <a class="shop-outline-btn" asp-controller="Account" asp-action="Profile">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="8" r="3.6" stroke="currentColor" stroke-width="1.8" />
+                        <path d="M5 20c1.3-3.5 4-5.2 7-5.2s5.7 1.7 7 5.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                    Mon profil
+                </a>
+            </div>
+        </header>
+
+        @if (Model.IsEmpty)
+        {
+            <div class="cart-empty">
+                <span class="cart-empty-icon" aria-hidden="true">
+                    <svg width="27" height="27" viewBox="0 0 24 24" fill="none">
+                        <path d="M7 3h7l4 4v14H7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                        <path d="M14 3v4h4M10 12h5M10 16h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                    </svg>
+                </span>
+                <h2>Aucune commande pour le moment</h2>
+                <p>Vous n'avez encore passé aucune commande. Explorez le catalogue et votre première commande apparaîtra ici.</p>
+                <div class="cart-empty-actions">
+                    <a class="cart-cta" asp-controller="Product" asp-action="Index">
+                        Découvrir le catalogue
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                    <a class="cart-cta-secondary" asp-controller="Account" asp-action="Profile">Retour à mon profil</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="orders-list">
                 @foreach (var order in Model.Orders)
                 {
-                    <tr>
-                        <td>
-                            <a class="fw-semibold text-decoration-none"
-                               asp-action="Details"
-                               asp-route-id="@order.Id">@order.OrderNumber</a>
-                        </td>
-                        <td>@order.OrderDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                        <td class="text-end fw-semibold">@order.TotalAmount.ToString("N2") €</td>
-                        <td><span class="badge text-bg-light border">@order.StatusLabel</span></td>
-                        <td class="text-end">
-                            <a asp-action="Details"
-                               asp-route-id="@order.Id"
-                               class="btn btn-sm btn-outline-primary">Détails</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                    <article class="orders-card @order.StatusBadgeClass">
+                        <div class="orders-main">
+                            <span class="orders-icon" aria-hidden="true">
+                                <svg width="21" height="21" viewBox="0 0 24 24" fill="none">
+                                    <path d="m12 3 8 4.2v9.6L12 21l-8-4.2V7.2L12 3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                                    <path d="m4.4 7.4 7.6 4 7.6-4M12 11.4V21" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                                </svg>
+                            </span>
+                            <div class="orders-heading">
+                                <span class="orders-label">Commande</span>
+                                <span class="orders-number">@order.OrderNumber</span>
+                            </div>
+                        </div>
 
-    @if (Model.TotalPages > 1)
-    {
-        <nav aria-label="Pagination des commandes" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-                    <a class="page-link" asp-action="History" asp-route-page="@(Model.Page - 1)">Précédent</a>
-                </li>
-                @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
-                {
-                    <li class="page-item @(pageNumber == Model.Page ? "active" : "")">
-                        <a class="page-link" asp-action="History" asp-route-page="@pageNumber">@pageNumber</a>
-                    </li>
+                        <div class="orders-amount">
+                            <span class="orders-label">Total</span>
+                            <span class="orders-total">@order.TotalAmount.ToString("N2") €</span>
+                        </div>
+
+                        <div class="orders-foot">
+                            <div class="orders-foot-meta">
+                                <span class="account-badge @order.StatusBadgeClass">@order.StatusLabel</span>
+                                <span class="orders-date">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <rect x="4" y="5.5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.7" />
+                                        <path d="M4 10h16M8.5 3.5v3.5M15.5 3.5v3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                                    </svg>
+                                    @order.OrderDate.ToLocalTime().ToString("dd/MM/yyyy à HH:mm")
+                                </span>
+                            </div>
+
+                            <a class="orders-detail" asp-action="Details" asp-route-id="@order.Id"
+                               aria-label="Voir le détail de la commande @order.OrderNumber">
+                                Voir le détail
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </a>
+                        </div>
+                    </article>
                 }
-                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-                    <a class="page-link" asp-action="History" asp-route-page="@(Model.Page + 1)">Suivant</a>
-                </li>
-            </ul>
-        </nav>
-    }
-}
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="cat-pagination" aria-label="Pagination des commandes">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <a class="cat-page-btn" asp-action="History" asp-route-page="@(Model.Page - 1)">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m15 6-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <span>Précédent</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="cat-page-btn is-disabled">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m15 6-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <span>Précédent</span>
+                        </span>
+                    }
+
+                    @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+                    {
+                        if (pageNumber == Model.Page)
+                        {
+                            <span class="cat-page-btn is-current" aria-current="page">@pageNumber</span>
+                        }
+                        else
+                        {
+                            <a class="cat-page-btn" asp-action="History" asp-route-page="@pageNumber">@pageNumber</a>
+                        }
+                    }
+
+                    @if (Model.HasNextPage)
+                    {
+                        <a class="cat-page-btn" asp-action="History" asp-route-page="@(Model.Page + 1)">
+                            <span>Suivant</span>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="cat-page-btn is-disabled">
+                            <span>Suivant</span>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                    }
+                </nav>
+            }
+
+            <div class="orders-footer">
+                <a class="cart-cta-secondary" asp-controller="Product" asp-action="Index">Continuer mes achats</a>
+            </div>
+        }
+    </div>
+</div>

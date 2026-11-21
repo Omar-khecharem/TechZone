@@ -14,6 +14,8 @@ namespace TechZone.ViewModels
 
         public string StatusLabel { get; set; } = string.Empty;
 
+        public string StatusBadgeClass { get; set; } = "is-neutral";
+
         public static OrderSummaryViewModel FromOrder(Order order)
         {
             return new OrderSummaryViewModel
@@ -22,7 +24,20 @@ namespace TechZone.ViewModels
                 OrderNumber = order.OrderNumber,
                 OrderDate = order.OrderDate,
                 TotalAmount = order.TotalAmount,
-                StatusLabel = OrderLabels.GetStatusLabel(order.Status)
+                StatusLabel = OrderLabels.GetStatusLabel(order.Status),
+                StatusBadgeClass = GetStatusBadgeClass(order.Status)
+            };
+        }
+
+        private static string GetStatusBadgeClass(OrderStatus status)
+        {
+            return status switch
+            {
+                OrderStatus.Confirmed => "is-confirmed",
+                OrderStatus.Shipped => "is-shipped",
+                OrderStatus.Delivered => "is-delivered",
+                OrderStatus.Cancelled => "is-cancelled",
+                _ => "is-neutral"
             };
         }
     }

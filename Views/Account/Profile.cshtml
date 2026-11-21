@@ -59,7 +59,14 @@
             <aside class="account-side" aria-label="Résumé du compte">
                 <div class="account-card">
                     <div class="account-id">
-                        <span class="account-avatar" aria-hidden="true">@initials</span>
+                        @if (!string.IsNullOrWhiteSpace(Model.ProfilePictureUrl))
+                        {
+                            <img class="account-avatar account-avatar-image" src="@Model.ProfilePictureUrl" alt="Photo de profil de @fullName" />
+                        }
+                        else
+                        {
+                            <span class="account-avatar" aria-hidden="true">@initials</span>
+                        }
                         <div class="account-id-copy">
                             <span class="account-name">@fullName</span>
                             <span class="account-email">@Model.Email</span>
@@ -125,8 +132,30 @@
                         </div>
                     </div>
 
-                    <form class="auth-form account-form" asp-action="Profile" method="post">
+                    <form class="auth-form account-form" asp-action="Profile" method="post" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="auth-validation" role="alert"></div>
+
+                        <div class="account-avatar-field">
+                            @if (!string.IsNullOrWhiteSpace(Model.ProfilePictureUrl))
+                            {
+                                <img class="account-avatar-preview" data-profile-picture-preview
+                                     src="@Model.ProfilePictureUrl" alt="Aperçu de la photo de profil" />
+                            }
+                            else
+                            {
+                                <img class="account-avatar-preview" data-profile-picture-preview
+                                     alt="Aperçu de la photo de profil" hidden />
+                            }
+                            <div class="account-avatar-control">
+                                <label class="auth-label" asp-for="ProfilePicture">
+                                    @Html.DisplayNameFor(model => model.ProfilePicture)
+                                </label>
+                                <input class="account-file-input" asp-for="ProfilePicture" type="file"
+                                       accept="image/png,image/jpeg,image/gif,image/webp" data-profile-picture-input />
+                                <span class="auth-hint">JPG, PNG, GIF ou WEBP · 2 Mo maximum.</span>
+                                <span class="auth-error" asp-validation-for="ProfilePicture"></span>
+                            </div>
+                        </div>
 
                         <div class="auth-grid">
                             <div class="auth-field">

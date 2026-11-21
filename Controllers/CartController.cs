@@ -40,8 +40,10 @@ namespace TechZone.Controllers
 
             var result = await _cartService.AddAsync(userId, productId, 1);
 
-            TempData[result == AddToCartStatus.Added ? "SuccessMessage" : "ErrorMessage"] =
-                GetAddMessage(result);
+            if (result != AddToCartStatus.Added)
+            {
+                TempData["ErrorMessage"] = GetAddMessage(result);
+            }
 
             if (result == AddToCartStatus.ProductNotFound)
             {

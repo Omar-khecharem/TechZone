@@ -23,10 +23,10 @@
                 <path d="M12 2l1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7z" fill="currentColor" />
             </svg>
             <div class="tz-announcement-track" data-announcement>
-                <span class="tz-announcement-msg is-active">Découvrez les dernières nouveautés tech.</span>
-                <span class="tz-announcement-msg">Explorez notre sélection informatique et mobile.</span>
-                <span class="tz-announcement-msg">Retrouvez les produits adaptés à vos besoins.</span>
-                <span class="tz-announcement-msg">Découvrez les offres disponibles sur TechZone.</span>
+                <span class="tz-announcement-msg is-active"><b>Livraison offerte</b> dès 300 DT d'achat.</span>
+                <span class="tz-announcement-msg">Paiement à la livraison partout en Tunisie.</span>
+                <span class="tz-announcement-msg">Garantie officielle 12 mois sur les produits éligibles.</span>
+                <span class="tz-announcement-msg">Support client 7j/7 — réponse en moins de 24h.</span>
             </div>
             <span class="tz-announcement-mark" aria-hidden="true">TZ — 2026</span>
         </div>
@@ -71,10 +71,7 @@
 
                 <details class="tz-account">
                     <summary class="tz-action">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" />
-                            <path d="M4 20c1.4-3.6 4.4-5.5 8-5.5s6.6 1.9 8 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                        </svg>
+                        @await Component.InvokeAsync("UserAvatar")
                         <span class="tz-action-label">@(isAuthenticated ? "Compte" : "Connexion")</span>
                         <svg class="tz-caret" width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -99,11 +96,13 @@
                 </details>
 
                 <a class="tz-action tz-action-cart" asp-area="" asp-controller="Cart" asp-action="Index" aria-label="Voir le panier">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M6 8h12l-1 12H7L6 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
-                        <path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                    </svg>
-                    <span class="tz-action-label">Panier</span>
+                    <span class="tz-action-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M6 8h12l-1 12H7L6 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                            <path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                        @await Component.InvokeAsync("CartBadge")
+                    </span>
                 </a>
 
                 <button class="tz-burger" type="button" data-menu-toggle aria-expanded="false" aria-controls="tz-mobile" aria-label="Ouvrir le menu">

@@ -11,18 +11,26 @@ namespace TechZone.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        private const long MaxProfilePictureBytes = 2 * 1024 * 1024;
+
+        private static readonly HashSet<string> AllowedProfilePictureExtensions =
+            new(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+
         private readonly IAccountService _accountService;
         private readonly IOrderService _orderService;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IWebHostEnvironment _environment;
 
         public AccountController(
             IAccountService accountService,
             IOrderService orderService,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IWebHostEnvironment environment)
         {
             _accountService = accountService;
             _orderService = orderService;
             _signInManager = signInManager;
+            _environment = environment;
         }
 
         [AllowAnonymous]
@@ -152,7 +160,8 @@ namespace TechZone.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email ?? string.Empty,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = user.PhoneNumber,
+                ProfilePictureUrl = user.ProfilePictureUrl
             };
 
             await PopulateOrderSummaryAsync(model);
@@ -164,25 +173,60 @@ namespace TechZone.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Profile(ProfileViewModel model)
         {
+            var user = await _accountService.GetByIdAsync(CurrentUserId);
+
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            var previousPictureUrl = user.ProfilePictureUrl;
+            model.ProfilePictureUrl = previousPictureUrl;
+            model.Email = user.Email ?? string.Empty;
+
+            if (model.ProfilePicture is { Length: > 0 })
+            {
+                var validationError = GetProfilePictureValidationError(model.ProfilePicture);
+
+                if (validationError is not null)
+                {
+                    ModelState.AddModelError(nameof(model.ProfilePicture), validationError);
+                }
+            }
+
             if (!ModelState.IsValid)
             {
-                await RestoreEmailAsync(model);
                 await PopulateOrderSummaryAsync(model);
                 return View(model);
+            }
+
+            string? uploadedPictureUrl = null;
+
+            if (model.ProfilePicture is { Length: > 0 })
+            {
+                uploadedPictureUrl = await SaveProfilePictureAsync(model.ProfilePicture, CurrentUserId);
             }
 
             var result = await _accountService.UpdateProfileAsync(
                 CurrentUserId,
                 model.FirstName,
                 model.LastName,
-                model.PhoneNumber);
+                model.PhoneNumber,
+                uploadedPictureUrl ?? previousPictureUrl);
 
             if (!result.Succeeded)
             {
+                DeleteProfilePicture(uploadedPictureUrl);
                 AddErrors(result);
-                await RestoreEmailAsync(model);
+                model.ProfilePictureUrl = previousPictureUrl;
                 await PopulateOrderSummaryAsync(model);
                 return View(model);
+            }
+
+            if (uploadedPictureUrl is not null &&
+                !string.Equals(uploadedPictureUrl, previousPictureUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                DeleteProfilePicture(previousPictureUrl);
             }
 
             TempData["SuccessMessage"] = "Votre profil a été mis à jour.";
@@ -192,10 +236,78 @@ namespace TechZone.Controllers
         private string CurrentUserId =>
             User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 
-        private async Task RestoreEmailAsync(ProfileViewModel model)
+        private static string? GetProfilePictureValidationError(IFormFile file)
         {
-            var user = await _accountService.GetByIdAsync(CurrentUserId);
-            model.Email = user?.Email ?? string.Empty;
+            var extension = Path.GetExtension(file.FileName);
+
+            if (string.IsNullOrWhiteSpace(extension) ||
+                !AllowedProfilePictureExtensions.Contains(extension))
+            {
+                return "Formats acceptés : JPG, PNG, GIF ou WEBP.";
+            }
+
+            if (file.Length > MaxProfilePictureBytes)
+            {
+                return "L'image ne doit pas dépasser 2 Mo.";
+            }
+
+            if (!string.IsNullOrWhiteSpace(file.ContentType) &&
+                !file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Le fichier sélectionné n'est pas une image valide.";
+            }
+
+            return null;
+        }
+
+        private async Task<string> SaveProfilePictureAsync(IFormFile file, string userId)
+        {
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            var fileName = $"{userId}-{Guid.NewGuid():N}{extension}";
+            var folder = Path.Combine(_environment.WebRootPath, "uploads", "avatars");
+
+            Directory.CreateDirectory(folder);
+
+            var filePath = Path.Combine(folder, fileName);
+
+            await using var stream = System.IO.File.Create(filePath);
+            await file.CopyToAsync(stream);
+
+            return $"/uploads/avatars/{fileName}";
+        }
+
+        private void DeleteProfilePicture(string? relativePath)
+        {
+            const string prefix = "/uploads/avatars/";
+
+            if (string.IsNullOrWhiteSpace(relativePath) ||
+                !relativePath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            var fileName = Path.GetFileName(relativePath);
+
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return;
+            }
+
+            try
+            {
+                var filePath = Path.Combine(_environment.WebRootPath, "uploads", "avatars", fileName);
+
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
         }
 
         private async Task PopulateOrderSummaryAsync(ProfileViewModel model)

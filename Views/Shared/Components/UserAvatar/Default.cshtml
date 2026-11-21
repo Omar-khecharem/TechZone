@@ -1,0 +1,13 @@
+@model TechZone.Models.ApplicationUser?
+
+@if (Model is not null && !string.IsNullOrWhiteSpace(Model.ProfilePictureUrl))
+{
+    <img class="tz-avatar" src="@Model.ProfilePictureUrl" alt="Photo de profil de @Model.FirstName @Model.LastName" />
+}
+else
+{
+    <svg class="tz-avatar-fallback" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" />
+        <path d="M4 20c1.4-3.6 4.4-5.5 8-5.5s6.6 1.9 8 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+    </svg>
+}

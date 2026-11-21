@@ -84,19 +84,120 @@
   }
 
   /* ----------------------------------------------------------
-     Header shadow on scroll
+     Header shadow + hide on scroll
      ---------------------------------------------------------- */
   var header = document.querySelector('[data-header]');
   if (header) {
-    var onScroll = function () {
-      if (window.scrollY > 8) {
-        header.classList.add('is-scrolled');
-      } else {
-        header.classList.remove('is-scrolled');
-      }
+    var root = document.documentElement;
+    var lastScrollY = window.scrollY;
+    var headerHidden = false;
+
+    var syncSidebarOffset = function () {
+      var offset = headerHidden ? 24 : header.offsetHeight + 18;
+      root.style.setProperty('--tz-sidebar-top', offset + 'px');
     };
+
+    var setHeaderHidden = function (hidden) {
+      if (hidden === headerHidden) {
+        return;
+      }
+
+      headerHidden = hidden;
+      header.classList.toggle('is-hidden', hidden);
+      syncSidebarOffset();
+    };
+
+    var onScroll = function () {
+      var y = window.scrollY;
+
+      header.classList.toggle('is-scrolled', y > 8);
+
+      if (header.classList.contains('is-search-open')) {
+        setHeaderHidden(false);
+        lastScrollY = y;
+        return;
+      }
+
+      var delta = y - lastScrollY;
+
+      if (y <= 80) {
+        setHeaderHidden(false);
+      } else if (delta > 6) {
+        setHeaderHidden(true);
+      } else if (delta < -6) {
+        setHeaderHidden(false);
+      }
+
+      lastScrollY = y;
+    };
+
+    syncSidebarOffset();
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', syncSidebarOffset);
+  }
+
+  /* ----------------------------------------------------------
+     Responsive header search
+     ---------------------------------------------------------- */
+  var searchToggle = document.querySelector('[data-search-toggle]');
+  var searchInput = document.querySelector('#tz-header-search .tz-search-input');
+
+  var setSearchOpen = function (open) {
+    if (!header || !searchToggle) {
+      return;
+    }
+
+    header.classList.toggle('is-search-open', open);
+    searchToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    searchToggle.setAttribute(
+      'aria-label',
+      open ? 'Fermer la recherche' : 'Ouvrir la recherche'
+    );
+
+    if (open && searchInput) {
+      window.setTimeout(function () {
+        searchInput.focus();
+      }, 40);
+    }
+  };
+
+  if (searchToggle && header) {
+    searchToggle.addEventListener('click', function (event) {
+      event.preventDefault();
+      setSearchOpen(!header.classList.contains('is-search-open'));
+    });
+
+    document.addEventListener('click', function (event) {
+      if (
+        header.classList.contains('is-search-open') &&
+        !header.contains(event.target)
+      ) {
+        setSearchOpen(false);
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && header.classList.contains('is-search-open')) {
+        setSearchOpen(false);
+        searchToggle.focus();
+      }
+    });
+
+    if (window.matchMedia) {
+      var searchDesktopQuery = window.matchMedia('(min-width: 981px)');
+      var onSearchDesktop = function (event) {
+        if (event.matches && header.classList.contains('is-search-open')) {
+          setSearchOpen(false);
+        }
+      };
+
+      if (searchDesktopQuery.addEventListener) {
+        searchDesktopQuery.addEventListener('change', onSearchDesktop);
+      } else if (searchDesktopQuery.addListener) {
+        searchDesktopQuery.addListener(onSearchDesktop);
+      }
+    }
   }
 
   /* ----------------------------------------------------------
@@ -1000,4 +1101,41 @@
       );
     });
   });
+})();
+
+// Account - profile picture preview
+(function () {
+  'use strict';
+
+  var input = document.querySelector('[data-profile-picture-input]');
+  var preview = document.querySelector('[data-profile-picture-preview]');
+
+  if (!input || !preview) {
+    return;
+  }
+
+  var objectUrl = null;
+
+  var revokeObjectUrl = function () {
+    if (objectUrl) {
+      URL.revokeObjectURL(objectUrl);
+      objectUrl = null;
+    }
+  };
+
+  input.addEventListener('change', function () {
+    var file = input.files && input.files[0];
+
+    revokeObjectUrl();
+
+    if (!file || (file.type && file.type.indexOf('image/') !== 0)) {
+      return;
+    }
+
+    objectUrl = URL.createObjectURL(file);
+    preview.src = objectUrl;
+    preview.hidden = false;
+  });
+
+  window.addEventListener('pagehide', revokeObjectUrl);
 })();

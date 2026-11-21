@@ -36,6 +36,9 @@ secrets.json
 *.ldf
 *.log
 
+# User-generated uploads
+wwwroot/uploads/
+
 # Operating system files
 Thumbs.db
 .DS_Store

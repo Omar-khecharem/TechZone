@@ -33,7 +33,12 @@ namespace TechZone.Services
             return _userManager.FindByIdAsync(userId);
         }
 
-        public async Task<IdentityResult> UpdateProfileAsync(string userId, string firstName, string lastName, string? phoneNumber)
+        public async Task<IdentityResult> UpdateProfileAsync(
+            string userId,
+            string firstName,
+            string lastName,
+            string? phoneNumber,
+            string? profilePictureUrl)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
@@ -49,6 +54,7 @@ namespace TechZone.Services
             user.FirstName = firstName.Trim();
             user.LastName = lastName.Trim();
             user.PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber.Trim();
+            user.ProfilePictureUrl = string.IsNullOrWhiteSpace(profilePictureUrl) ? null : profilePictureUrl.Trim();
 
             return await _userManager.UpdateAsync(user);
         }

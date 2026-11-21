@@ -3,67 +3,226 @@
     ViewData["Title"] = "Validation de la commande";
 }
 
-<div style="max-width: 1200px; margin: 2rem auto; padding: 1rem 1rem 2rem;">
-    <h1 style="margin-bottom: 0.5rem;">Validation de la commande</h1>
-    <p style="color: #6c7573; margin-bottom: 1rem;">Vérifiez vos informations avant de confirmer.</p>
+<div class="shop-page cart-page">
+    <div class="tz-container">
+        <nav class="cat-breadcrumb" aria-label="Fil d'Ariane">
+            <a asp-controller="Home" asp-action="Index">Accueil</a>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <a asp-controller="Cart" asp-action="Index">Panier</a>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>Validation</span>
+        </nav>
 
-    <a asp-controller="Cart" asp-action="Index" style="background: #6c7573; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none;">Retour au panier</a>
-
-    @if (TempData["ErrorMessage"] is string errorMessage)
-    {
-        <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 0.375rem; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.875rem;">@errorMessage</div>
-    }
-
-    <form action="" method="post" style="max-width: 1200px;">
-        <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">Nom complet</label>
-            <input style="width: 100%; padding: 0.375rem; border: 1px solid #ccc; border-radius: 0.25rem; margin-bottom: 0.5rem;" asp-for="FullName" />
-            <span style="color: #dc3545; font-size: 0.875rem; display: block;" asp-validation-for="FullName"></span>
-        </div>
-
-        <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem;">
-            <div style="flex: 0 0 45%; max-width: 45%;">
-                <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">Téléphone</label>
-                <input style="width: 100%; padding: 0.375rem; border: 1px solid #ccc; border-radius: 0.25rem;" asp-for="Phone" />
-            </div>
-            <div style="flex: 0 0 45%; max-width: 45%;">
-                <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">Adresse</label>
-                <input style="width: 100%; padding: 0.375rem; border: 1px solid #ccc; border-radius: 0.25rem;" asp-for="Address" />
-            </div>
-        </div>
-
-        <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem;">
-            <div style="flex: 0 0 30%; max-width: 30%;">
-                <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">Ville</label>
-                <input style="width: 100%; padding: 0.375rem; border: 1px solid #ccc; border-radius: 0.25rem;" asp-for="City" />
-            </div>
-            <div style="flex: 0 0 20%; max-width: 20%;">
-                <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">Code postal</label>
-                <input style="width: 100%; padding: 0.375rem; border: 1px solid #ccc; border-radius: 0.25rem;" asp-for="PostalCode" />
-            </div>
-            <div style="flex: 0 0 25%; max-width: 25%;">
-                <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">Pays</label>
-                <input style="width: 100%; padding: 0.375rem; border: 1px solid #ccc; border-radius: 0.25rem;" asp-for="Country" />
-            </div>
-        </div>
-
-        <hr style="margin: 1rem 0; border: 0; border-top: 1px solid #dee2e9;" />
-
-        <div style="margin-bottom: 1rem; font-size: 0.875rem;">
-            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 0.5rem;">
-                <div>Paiement</div>
-                <span style="display: inline-block; background: #ffc107; color: #000; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">En attente</span>
+        <header class="shop-head">
+            <div>
+                <span class="shop-eyebrow">Dernière étape</span>
+                <h1 class="shop-title">Validation de la commande</h1>
+                <p class="shop-lead">Vérifiez vos informations de livraison avant de confirmer votre commande.</p>
             </div>
 
-            <div style="display: flex; flex-wrap: wrap; justify-content: between; gap: 0.5rem;">
-                <div style="flex: 0 0 30%; max-width: 30%; font-size: 0.875rem;">Paiement à la livraison</div>
-                <div style="flex: 0 0 70%; max-width: 70%; background: #f8f9fa; padding: 0.75rem; border-radius: 0.375rem;">Aucun paiement en ligne n'est effectué. Le montant sera réglé à la réception.</div>
+            <div class="shop-head-aside">
+                <a class="shop-outline-btn" asp-controller="Cart" asp-action="Index">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Retour au panier
+                </a>
             </div>
-        </div>
+        </header>
 
-        <div style="max-width: 1200px; margin: 2rem auto; display: flex; gap: 0.5rem; justify-content: flex-end;">
-            <button type="submit" style="padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 0.25rem; cursor: pointer; font-size: 0.875rem;">Confirmer la commande</button>
-            <p style="color: #6c7573; font-size: 0.75rem; margin: 0;">Le stock et le total seront vérifiés à nouveau lors de la confirmation.</p>
-        </div>
-    </form>
+        @if (TempData["ErrorMessage"] is string errorMessage)
+        {
+            <div class="auth-alert is-error" role="alert">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" />
+                    <path d="M12 8v5M12 16.5h.01" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+                </svg>
+                <span>@errorMessage</span>
+            </div>
+        }
+
+        <form asp-action="Checkout" method="post" class="cart-layout">
+            <section class="cart-items-card" aria-label="Informations de livraison">
+                <div class="cart-items-head">
+                    <span>Informations de livraison</span>
+                    <span>@Model.Cart.TotalQuantity article(s)</span>
+                </div>
+
+                <div class="checkout-body">
+                    <div asp-validation-summary="ModelOnly" class="auth-validation" role="alert"></div>
+
+                    <div class="auth-field">
+                        <label class="auth-label" asp-for="FullName">
+                            @Html.DisplayNameFor(model => model.FullName)
+                            <span class="auth-req" aria-hidden="true">*</span>
+                        </label>
+                        <div class="auth-input">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="12" cy="8" r="3.6" stroke="currentColor" stroke-width="1.8" />
+                                <path d="M5 20c1.3-3.5 4-5.2 7-5.2s5.7 1.7 7 5.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                            </svg>
+                            <input class="auth-control" asp-for="FullName" autocomplete="name"
+                                   placeholder="Nom complet" aria-required="true" />
+                        </div>
+                        <span class="auth-error" asp-validation-for="FullName"></span>
+                    </div>
+
+                    <div class="auth-grid">
+                        <div class="auth-field">
+                            <label class="auth-label" asp-for="Phone">
+                                @Html.DisplayNameFor(model => model.Phone)
+                                <span class="auth-req" aria-hidden="true">*</span>
+                            </label>
+                            <div class="auth-input">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M6.5 4h3l1.5 4-2 1.5a12 12 0 0 0 5.5 5.5L16 13l4 1.5v3a2.5 2.5 0 0 1-2.7 2.5A16 16 0 0 1 4 6.7 2.5 2.5 0 0 1 6.5 4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                                </svg>
+                                <input class="auth-control" asp-for="Phone" type="tel" autocomplete="tel"
+                                       placeholder="Numéro de téléphone" aria-required="true" />
+                            </div>
+                            <span class="auth-error" asp-validation-for="Phone"></span>
+                        </div>
+
+                        <div class="auth-field">
+                            <label class="auth-label" asp-for="Address">
+                                @Html.DisplayNameFor(model => model.Address)
+                                <span class="auth-req" aria-hidden="true">*</span>
+                            </label>
+                            <div class="auth-input">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                                    <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.8" />
+                                </svg>
+                                <input class="auth-control" asp-for="Address" autocomplete="street-address"
+                                       placeholder="Adresse d'expédition" aria-required="true" />
+                            </div>
+                            <span class="auth-error" asp-validation-for="Address"></span>
+                        </div>
+                    </div>
+
+                    <div class="checkout-grid-3">
+                        <div class="auth-field">
+                            <label class="auth-label" asp-for="City">
+                                @Html.DisplayNameFor(model => model.City)
+                                <span class="auth-req" aria-hidden="true">*</span>
+                            </label>
+                            <div class="auth-input">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M4 20V9l5-3 5 3v11M14 20V12l6-3v11M4 20h16" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+                                </svg>
+                                <input class="auth-control" asp-for="City" autocomplete="address-level2"
+                                       placeholder="Ville" aria-required="true" />
+                            </div>
+                            <span class="auth-error" asp-validation-for="City"></span>
+                        </div>
+
+                        <div class="auth-field">
+                            <label class="auth-label" asp-for="PostalCode">
+                                @Html.DisplayNameFor(model => model.PostalCode)
+                                <span class="auth-req" aria-hidden="true">*</span>
+                            </label>
+                            <div class="auth-input">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <rect x="3.5" y="5.5" width="17" height="13" rx="3" stroke="currentColor" stroke-width="1.8" />
+                                    <path d="M7 9h4M7 12h7M7 15h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                                </svg>
+                                <input class="auth-control" asp-for="PostalCode" autocomplete="postal-code"
+                                       placeholder="Code postal" aria-required="true" />
+                            </div>
+                            <span class="auth-error" asp-validation-for="PostalCode"></span>
+                        </div>
+
+                        <div class="auth-field">
+                            <label class="auth-label" asp-for="Country">
+                                @Html.DisplayNameFor(model => model.Country)
+                                <span class="auth-req" aria-hidden="true">*</span>
+                            </label>
+                            <div class="auth-input">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8" />
+                                    <path d="M3.5 12h17M12 3.5c2.4 2.3 3.6 5.2 3.6 8.5s-1.2 6.2-3.6 8.5c-2.4-2.3-3.6-5.2-3.6-8.5S9.6 5.8 12 3.5Z" stroke="currentColor" stroke-width="1.8" />
+                                </svg>
+                                <input class="auth-control" asp-for="Country" autocomplete="country-name"
+                                       placeholder="Pays" aria-required="true" />
+                            </div>
+                            <span class="auth-error" asp-validation-for="Country"></span>
+                        </div>
+                    </div>
+
+                    <div class="checkout-payment">
+                        <div class="checkout-payment-head">
+                            <span class="checkout-payment-title">Paiement</span>
+                            <span class="checkout-badge">En attente</span>
+                        </div>
+                        <div class="checkout-payment-row">
+                            <span class="checkout-payment-method">Paiement à la livraison</span>
+                            <p>Aucun paiement en ligne n'est effectué. Le montant sera réglé à la réception.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="cart-summary" aria-label="Récapitulatif de la commande">
+                <h2 class="cart-summary-title">Récapitulatif</h2>
+
+                <div class="cart-summary-lines">
+                    <div class="cart-summary-row">
+                        <span>Sous-total (@Model.Cart.TotalQuantity article(s))</span>
+                        <span>@Model.Cart.Subtotal.ToString("N2") €</span>
+                    </div>
+                    <div class="cart-summary-row">
+                        <span>Livraison</span>
+                        <span>À la réception</span>
+                    </div>
+                    <div class="cart-summary-row is-total">
+                        <span>Total</span>
+                        <span>@Model.Cart.Total.ToString("N2") €</span>
+                    </div>
+                </div>
+
+                <button class="cart-cta" type="submit">
+                    Confirmer la commande
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+
+                <a class="cart-cta-secondary" asp-controller="Cart" asp-action="Index">Retour au panier</a>
+
+                <p class="cart-summary-note">Le stock et le total seront vérifiés à nouveau lors de la confirmation.</p>
+
+                <ul class="cart-trust">
+                    <li>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <rect x="5" y="10.5" width="14" height="9.5" rx="2.6" stroke="currentColor" stroke-width="1.8" />
+                            <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                        Paiement à la livraison
+                    </li>
+                    <li>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 3.5 5 6.5v5.2c0 4.2 2.9 7.4 7 8.8 4.1-1.4 7-4.6 7-8.8V6.5l-7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                            <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Stock vérifié en temps réel
+                    </li>
+                    <li>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                            <path d="M4 11h16M8 15h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                        Suivi de commande disponible
+                    </li>
+                </ul>
+            </aside>
+        </form>
+    </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
