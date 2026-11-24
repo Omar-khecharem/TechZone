@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Écrans">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#160b04"/>
+      <stop offset="1" stop-color="#4a2a08"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.25" cy="0.22" r="0.85">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".06"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <rect width="800" height="500" fill="url(#grid)"/>
+  <rect width="800" height="500" fill="url(#glow)"/>
+  <g fill="none" stroke="#fff4e0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="236" y="136" width="328" height="210" rx="16"/>
+    <path d="M400 346v54M330 400h140"/>
+    <path d="M286 200h74M286 238h132" stroke-opacity=".5"/>
+  </g>
+  <circle cx="600" cy="150" r="9" fill="#fbbf24"/>
+  <circle cx="632" cy="178" r="4" fill="#fbbf24" opacity=".6"/>
+</svg>

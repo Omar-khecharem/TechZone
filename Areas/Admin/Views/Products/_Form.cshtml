@@ -52,8 +52,8 @@
     <div class="adm-field is-full">
         <label class="adm-label" asp-for="ImageFile"></label>
         <div class="adm-upload">
-            <input class="adm-input adm-file" asp-for="ImageFile" type="file" accept="image/png,image/jpeg,image/gif,image/webp" />
-            <span class="adm-help">JPG, PNG, GIF ou WEBP · 3 Mo maximum. Le fichier remplace l'URL ci-dessus.</span>
+            <input class="adm-input adm-file" asp-for="ImageFile" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif,image/bmp,image/tiff,image/svg+xml,image/x-icon,image/heic,image/heif" />
+            <span class="adm-help">JPG, PNG, GIF, WEBP, AVIF, BMP, TIFF, SVG, ICO, HEIC ou HEIF · 10 Mo maximum. Le fichier remplace l'URL ci-dessus.</span>
             <span class="adm-field-error" asp-validation-for="ImageFile"></span>
         </div>
     </div>

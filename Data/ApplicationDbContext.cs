@@ -35,6 +35,7 @@ namespace TechZone.Data
             builder.Entity<Category>(entity =>
             {
                 entity.HasIndex(category => category.Name).IsUnique();
+                entity.Property(category => category.ImageUrl).HasMaxLength(500);
                 entity.HasMany(category => category.Products)
                     .WithOne(product => product.Category)
                     .HasForeignKey(product => product.CategoryId)

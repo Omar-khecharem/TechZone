@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace TechZone.ViewModels.Admin
 {
@@ -9,6 +10,8 @@ namespace TechZone.ViewModels.Admin
         public string Name { get; set; } = string.Empty;
 
         public string? Description { get; set; }
+
+        public string? ImageUrl { get; set; }
 
         public int ProductCount { get; set; }
     }
@@ -31,6 +34,15 @@ namespace TechZone.ViewModels.Admin
         [StringLength(500, ErrorMessage = "La description ne doit pas dépasser 500 caractères.")]
         [Display(Name = "Description")]
         public string? Description { get; set; }
+
+        [StringLength(500)]
+        [Display(Name = "URL de l'image")]
+        public string? ImageUrl { get; set; }
+
+        [Display(Name = "Image de la catégorie")]
+        public IFormFile? ImageFile { get; set; }
+
+        public string? ExistingImageUrl { get; set; }
 
         public bool IsEdit => Id > 0;
     }

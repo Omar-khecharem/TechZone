@@ -1,6 +1,222 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Politique de confidentialité";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="shop-page legal-page">
+    <div class="tz-container">
+        <nav class="cat-breadcrumb" aria-label="Fil d'Ariane">
+            <a asp-controller="Home" asp-action="Index">Accueil</a>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>Confidentialité</span>
+        </nav>
+
+        <header class="shop-head">
+            <div>
+                <span class="shop-eyebrow">Informations légales</span>
+                <h1 class="shop-title">Politique de confidentialité</h1>
+                <p class="shop-lead">
+                    Chez TechZone, la protection de vos données personnelles est une priorité.
+                    Cette page explique quelles informations nous collectons, comment nous les
+                    utilisons et les droits dont vous disposez.
+                </p>
+            </div>
+            <div class="shop-head-aside">
+                <span class="legal-updated">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <rect x="4" y="5.5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.7" />
+                        <path d="M4 10h16M8.5 3.5v3.5M15.5 3.5v3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                    </svg>
+                    Mise à jour : janvier 2026
+                </span>
+            </div>
+        </header>
+
+        <div class="legal-layout">
+            <aside class="legal-nav" aria-label="Sommaire de la politique de confidentialité">
+                <p class="legal-nav-title">Sommaire</p>
+                <nav class="legal-nav-links">
+                    <a href="#collecte">Données collectées</a>
+                    <a href="#utilisation">Utilisation des données</a>
+                    <a href="#cookies">Cookies</a>
+                    <a href="#partage">Partage &amp; conservation</a>
+                    <a href="#droits">Vos droits</a>
+                    <a href="#securite">Sécurité</a>
+                    <a href="#contact">Nous contacter</a>
+                </nav>
+
+                <div class="legal-nav-help">
+                    <span class="legal-nav-help-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                            <path d="m4.5 7 7.5 6 7.5-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                    <div>
+                        <p>Une question sur vos données ?</p>
+                        <a href="mailto:contact@techzone.tn">contact@techzone.tn</a>
+                    </div>
+                </div>
+            </aside>
+
+            <article class="legal-content">
+                <section class="legal-section" id="collecte">
+                    <span class="legal-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M7 3h7l4 4v14H7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                            <path d="M14 3v4h4M10 12h5M10 16h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h2>Données que nous collectons</h2>
+                        <p>
+                            Nous collectons uniquement les informations nécessaires au fonctionnement
+                            de la boutique et à la bonne gestion de vos commandes.
+                        </p>
+                        <ul>
+                            <li><strong>Informations de compte :</strong> nom, adresse e-mail et mot de passe chiffré.</li>
+                            <li><strong>Informations de commande :</strong> adresse de livraison, numéro de téléphone et historique d'achats.</li>
+                            <li><strong>Données techniques :</strong> type de navigateur, adresse IP et pages consultées, à des fins de sécurité et de statistiques.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="legal-section" id="utilisation">
+                    <span class="legal-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8" />
+                            <path d="M12 8v4l2.8 2.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h2>Comment nous utilisons vos données</h2>
+                        <p>
+                            Vos données nous permettent de traiter vos commandes, de vous livrer
+                            dans les meilleures conditions et d'améliorer votre expérience sur TechZone.
+                        </p>
+                        <ul>
+                            <li>Créer et sécuriser votre compte client.</li>
+                            <li>Préparer, livrer et suivre vos commandes.</li>
+                            <li>Répondre à vos demandes via notre support.</li>
+                            <li>Vous informer, avec votre accord, de nos nouveautés et offres.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="legal-section" id="cookies">
+                    <span class="legal-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 3a9 9 0 1 0 9 9 4.5 4.5 0 0 1-6-4.5A4.5 4.5 0 0 1 12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                            <circle cx="9" cy="10" r="1.1" fill="currentColor" />
+                            <circle cx="9.5" cy="15" r="1.1" fill="currentColor" />
+                            <circle cx="14" cy="14" r="1.1" fill="currentColor" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h2>Cookies et technologies similaires</h2>
+                        <p>
+                            Des cookies sont utilisés pour maintenir votre session, mémoriser votre panier
+                            et mesurer l'audience du site. Vous pouvez à tout moment configurer votre
+                            navigateur pour les refuser ou les supprimer.
+                        </p>
+                        <div class="legal-callout">
+                            <strong>À savoir :</strong> le refus de certains cookies peut limiter l'accès
+                            au panier ou à votre espace client.
+                        </div>
+                    </div>
+                </section>
+
+                <section class="legal-section" id="partage">
+                    <span class="legal-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <circle cx="6" cy="12" r="2.6" stroke="currentColor" stroke-width="1.8" />
+                            <circle cx="18" cy="6" r="2.6" stroke="currentColor" stroke-width="1.8" />
+                            <circle cx="18" cy="18" r="2.6" stroke="currentColor" stroke-width="1.8" />
+                            <path d="m8.4 10.8 7.2-3.6M8.4 13.2l7.2 3.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h2>Partage et conservation</h2>
+                        <p>
+                            Vos données ne sont jamais vendues. Elles peuvent être transmises à nos
+                            partenaires de livraison et prestataires de paiement, dans la stricte limite
+                            de ce qui est nécessaire à l'exécution de votre commande.
+                        </p>
+                        <p>
+                            Les informations de commande sont conservées pendant la durée légale
+                            applicable en Tunisie, puis supprimées ou anonymisées.
+                        </p>
+                    </div>
+                </section>
+
+                <section class="legal-section" id="droits">
+                    <span class="legal-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 3 5 6v6c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6l-7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                            <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h2>Vos droits</h2>
+                        <p>
+                            Conformément à la réglementation en vigueur, vous disposez de plusieurs
+                            droits sur vos données personnelles.
+                        </p>
+                        <ul>
+                            <li><strong>Accès :</strong> consulter les données que nous détenons sur vous.</li>
+                            <li><strong>Rectification :</strong> corriger les informations inexactes depuis votre profil.</li>
+                            <li><strong>Suppression :</strong> demander l'effacement de votre compte et de vos données.</li>
+                            <li><strong>Opposition :</strong> vous désabonner de nos communications à tout moment.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="legal-section" id="securite">
+                    <span class="legal-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <rect x="4.5" y="10" width="15" height="10" rx="2.4" stroke="currentColor" stroke-width="1.8" />
+                            <path d="M8 10V7.5a4 4 0 0 1 8 0V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                            <circle cx="12" cy="15" r="1.4" fill="currentColor" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h2>Sécurité de vos informations</h2>
+                        <p>
+                            Les mots de passe sont chiffrés et les échanges avec le site sont protégés.
+                            Nous mettons en place des mesures techniques et organisationnelles pour
+                            prévenir tout accès non autorisé à vos données.
+                        </p>
+                    </div>
+                </section>
+
+                <section class="legal-section legal-section-contact" id="contact">
+                    <span class="legal-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                            <path d="m4.5 7 7.5 6 7.5-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h2>Nous contacter</h2>
+                        <p>
+                            Pour toute question relative à cette politique ou pour exercer vos droits,
+                            écrivez-nous et notre équipe vous répondra sous 24 heures.
+                        </p>
+                        <div class="legal-contact-actions">
+                            <a class="legal-btn" href="mailto:contact@techzone.tn">
+                                contact@techzone.tn
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </a>
+                            <a class="legal-btn legal-btn-ghost" asp-controller="Home" asp-action="Index">
+                                Retour à l'accueil
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </article>
+        </div>
+    </div>
+</div>

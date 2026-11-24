@@ -13,11 +13,11 @@
     <header class="adm-card-head">
         <div>
             <h2 class="adm-card-title">Modifier « @Model.Name »</h2>
-            <p class="adm-card-sub">Mettez à jour le nom et la description</p>
+            <p class="adm-card-sub">Mettez à jour les informations et l'image de la catégorie</p>
         </div>
     </header>
 
-    <form class="adm-form" asp-area="Admin" asp-controller="Categories" asp-action="Edit" method="post">
+    <form class="adm-form" asp-area="Admin" asp-controller="Categories" asp-action="Edit" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="Id" />
         <div asp-validation-summary="ModelOnly" class="adm-validation"></div>
 

@@ -1139,3 +1139,226 @@
 
   window.addEventListener('pagehide', revokeObjectUrl);
 })();
+
+// Home - premium interactions (reveal, count-up, countdown, hero, newsletter)
+(function () {
+  'use strict';
+
+  var reduceMotion = window.matchMedia
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
+
+  /* Scroll reveal */
+  var revealItems = Array.prototype.slice.call(
+    document.querySelectorAll('[data-reveal]')
+  );
+
+  if (!revealItems.length) {
+    return;
+  }
+
+  if (reduceMotion || !('IntersectionObserver' in window)) {
+    revealItems.forEach(function (item) {
+      item.classList.add('is-visible');
+    });
+  } else {
+    var revealObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.16, rootMargin: '0px 0px -8% 0px' }
+    );
+
+    revealItems.forEach(function (item) {
+      revealObserver.observe(item);
+    });
+  }
+
+  /* Count-up statistics */
+  var counters = Array.prototype.slice.call(document.querySelectorAll('[data-count]'));
+
+  var formatValue = function (el, value) {
+    var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
+    var suffix = el.getAttribute('data-suffix') || '';
+    return value.toFixed(decimals) + suffix;
+  };
+
+  var runCounter = function (el) {
+    var target = parseFloat(el.getAttribute('data-count'));
+    if (isNaN(target)) {
+      return;
+    }
+
+    if (reduceMotion) {
+      el.textContent = formatValue(el, target);
+      return;
+    }
+
+    var duration = 1500;
+    var start = null;
+
+    var tick = function (timestamp) {
+      if (!start) {
+        start = timestamp;
+      }
+      var progress = Math.min((timestamp - start) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = formatValue(el, target * eased);
+      if (progress < 1) {
+        window.requestAnimationFrame(tick);
+      } else {
+        el.textContent = formatValue(el, target);
+      }
+    };
+
+    window.requestAnimationFrame(tick);
+  };
+
+  if (counters.length) {
+    if (!('IntersectionObserver' in window)) {
+      counters.forEach(runCounter);
+    } else {
+      var counterObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              runCounter(entry.target);
+              counterObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.6 }
+      );
+
+      counters.forEach(function (el) {
+        counterObserver.observe(el);
+      });
+    }
+  }
+
+  /* Promo countdown - ends next Sunday 23:59:59 */
+  var countdown = document.querySelector('[data-countdown]');
+
+  if (countdown) {
+    var target = new Date();
+    var daysUntilSunday = (7 - target.getDay()) % 7;
+    target.setDate(target.getDate() + daysUntilSunday);
+    target.setHours(23, 59, 59, 999);
+
+    if (target.getTime() <= Date.now()) {
+      target.setDate(target.getDate() + 7);
+    }
+
+    var cells = {
+      d: countdown.querySelector('[data-cd="d"]'),
+      h: countdown.querySelector('[data-cd="h"]'),
+      m: countdown.querySelector('[data-cd="m"]'),
+      s: countdown.querySelector('[data-cd="s"]')
+    };
+
+    var pad = function (value) {
+      return value < 10 ? '0' + value : String(value);
+    };
+
+    var renderCountdown = function () {
+      var diff = Math.max(0, target.getTime() - Date.now());
+      var totalSeconds = Math.floor(diff / 1000);
+
+      var days = Math.floor(totalSeconds / 86400);
+      var hours = Math.floor((totalSeconds % 86400) / 3600);
+      var minutes = Math.floor((totalSeconds % 3600) / 60);
+      var seconds = totalSeconds % 60;
+
+      if (cells.d) {
+        cells.d.textContent = pad(days);
+      }
+      if (cells.h) {
+        cells.h.textContent = pad(hours);
+      }
+      if (cells.m) {
+        cells.m.textContent = pad(minutes);
+      }
+      if (cells.s) {
+        cells.s.textContent = pad(seconds);
+      }
+    };
+
+    renderCountdown();
+    window.setInterval(renderCountdown, 1000);
+  }
+
+  /* Hero video - reveal only when a real video is available */
+  var heroVideo = document.querySelector('[data-hero-video]');
+
+  if (heroVideo) {
+    var markVideoReady = function () {
+      heroVideo.classList.add('is-ready');
+    };
+
+    heroVideo.addEventListener('playing', markVideoReady);
+    heroVideo.addEventListener('canplay', markVideoReady);
+
+    if (heroVideo.readyState >= 2) {
+      markVideoReady();
+    }
+
+    var playPromise = heroVideo.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(function () {});
+    }
+  }
+
+  /* Hero pointer glow */
+  var hero = document.querySelector('[data-hero]');
+  var heroGlow = document.querySelector('[data-hero-glow]');
+
+  if (hero && heroGlow && !reduceMotion && window.matchMedia('(pointer: fine)').matches) {
+    hero.addEventListener('pointermove', function (event) {
+      var rect = hero.getBoundingClientRect();
+      var x = ((event.clientX - rect.left) / rect.width) * 100;
+      var y = ((event.clientY - rect.top) / rect.height) * 100;
+      heroGlow.style.setProperty('--mx', x + '%');
+      heroGlow.style.setProperty('--my', y + '%');
+    });
+  }
+
+  /* Newsletter form */
+  var newsletters = Array.prototype.slice.call(document.querySelectorAll('[data-news]'));
+
+  newsletters.forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      var input = form.querySelector('input[type="email"]');
+      var note = form.querySelector('[data-news-note]');
+      if (!input) {
+        return;
+      }
+
+      var value = input.value.trim();
+      var isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+      form.classList.remove('is-done', 'is-error');
+
+      if (!isValid) {
+        form.classList.add('is-error');
+        if (note) {
+          note.textContent = 'Merci de saisir une adresse e-mail valide.';
+        }
+        input.focus();
+        return;
+      }
+
+      form.classList.add('is-done');
+      if (note) {
+        note.textContent = 'Merci ! Vous êtes bien inscrit à la newsletter TechZone.';
+      }
+      input.value = '';
+    });
+  });
+})();

@@ -32,7 +32,8 @@ namespace TechZone.Controllers
                 {
                     Id = category.Id,
                     Name = category.Name,
-                    Description = category.Description
+                    Description = category.Description,
+                    ImageUrl = category.ImageUrl
                 })
                 .ToList();
 

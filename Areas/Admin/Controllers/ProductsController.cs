@@ -11,10 +11,14 @@ namespace TechZone.Areas.Admin.Controllers
     public class ProductsController : Controller
     {
         private const int PageSize = 10;
-        private const long MaxImageBytes = 3 * 1024 * 1024;
+        private const long MaxImageBytes = 10 * 1024 * 1024;
 
         private static readonly HashSet<string> AllowedImageExtensions =
-            new(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+            new(StringComparer.OrdinalIgnoreCase)
+            {
+                ".jpg", ".jpeg", ".png", ".gif", ".webp",
+                ".avif", ".bmp", ".tif", ".tiff", ".svg", ".ico", ".heic", ".heif"
+            };
 
         private readonly IAdminService _adminService;
         private readonly IWebHostEnvironment _environment;
@@ -215,11 +219,11 @@ namespace TechZone.Areas.Admin.Controllers
             if (string.IsNullOrWhiteSpace(extension) ||
                 !AllowedImageExtensions.Contains(extension))
             {
-                ModelState.AddModelError(nameof(model.ImageFile), "Formats acceptés : JPG, PNG, GIF ou WEBP.");
+                ModelState.AddModelError(nameof(model.ImageFile), "Formats acceptés : JPG, JPEG, PNG, GIF, WEBP, AVIF, BMP, TIFF, SVG, ICO, HEIC ou HEIF.");
             }
             else if (model.ImageFile.Length > MaxImageBytes)
             {
-                ModelState.AddModelError(nameof(model.ImageFile), "L'image ne doit pas dépasser 3 Mo.");
+                ModelState.AddModelError(nameof(model.ImageFile), "L'image ne doit pas dépasser 10 Mo.");
             }
             else if (!string.IsNullOrWhiteSpace(model.ImageFile.ContentType) &&
                      !model.ImageFile.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))

@@ -41,307 +41,375 @@
     ViewData["Title"] = "Accueil";
 
     var products = Model.FeaturedProducts;
+    var categories = Model.Categories;
 
-    Func<string, ProductCardViewModel> findCategory = name =>
-        products.FirstOrDefault(p => string.Equals(p.CategoryName, name, StringComparison.OrdinalIgnoreCase))!;
+    var spotlight = products.FirstOrDefault();
+    var deal = products.ElementAtOrDefault(1) ?? spotlight;
+    var picks = products.Take(8).ToList();
 
-    var heroLaptop = findCategory("Ordinateurs portables") ?? products.FirstOrDefault();
-    var heroPhone = findCategory("Smartphones") ?? products.ElementAtOrDefault(1);
-    var heroAudio = products.FirstOrDefault(p => p.Name.Contains("Casque", StringComparison.OrdinalIgnoreCase))
-                    ?? findCategory("Accessoires");
-    var editorialProduct = products.FirstOrDefault(p => p.Name.Contains("Studio", StringComparison.OrdinalIgnoreCase))
-                           ?? findCategory("Ordinateurs portables")
-                           ?? products.LastOrDefault();
-
-    var selection = products.Take(6).ToList();
-    var heroCategories = Model.Categories.Take(4).ToList();
+    var marqueeItems = new[]
+    {
+        "Livraison offerte dès 300 DT",
+        "Paiement à la livraison",
+        "Garantie officielle 12 mois",
+        "Support expert 7j/7",
+        "Retours sous 14 jours",
+        "Paiement 100% sécurisé"
+    };
 }
 
-<div class="home">
+<div class="hp-home">
 
     @* ============================ HERO ============================ *@
-    <section class="home-hero" aria-labelledby="home-title">
-        <div class="tz-container home-hero-inner">
-            <div class="home-hero-copy">
-                <p class="home-eyebrow">TechZone · L'univers technologique</p>
+    <section class="hp-hero" data-hero aria-labelledby="hp-hero-title">
+        <div class="hp-hero-media" aria-hidden="true">
+            <div class="hp-hero-fallback"></div>
+            <video class="hp-hero-video" data-hero-video autoplay muted loop playsinline preload="auto"
+                   poster="@Url.Content("~/images/hero/hero-poster.svg")">
+                <source src="~/media/hero.webm" type="video/webm" />
+                <source src="~/media/hero.mp4" type="video/mp4" />
+            </video>
+            <div class="hp-hero-grid"></div>
+            <div class="hp-hero-scrim"></div>
+            <div class="hp-hero-glow" data-hero-glow></div>
+        </div>
 
-                <h1 class="home-title" id="home-title">Le futur <em>se choisit.</em></h1>
+        <div class="tz-container hp-hero-inner">
+            <div class="hp-hero-copy">
+                <span class="hp-eyebrow" data-reveal>
+                    <span class="hp-eyebrow-dot" aria-hidden="true"></span>
+                    Collection 2026 — Sélection experte
+                </span>
 
-                <p class="home-lead">
-                    Des équipements pensés pour travailler, créer et rester connecté.
-                    Explorez une sélection technologique qui accompagne vos ambitions.
+                <h1 class="hp-hero-title" id="hp-hero-title" data-reveal style="--d:60ms">
+                    La technologie,<br /><em>sans compromis.</em>
+                </h1>
+
+                <p class="hp-hero-lead" data-reveal style="--d:120ms">
+                    Ordinateurs, smartphones et audio triés sur le volet. Une expérience d'achat
+                    fluide, un accompagnement d'expert et des garanties officielles.
                 </p>
 
-                <div class="home-actions">
-                    <a class="home-btn home-btn-primary" asp-controller="Product" asp-action="Index">
-                        Explorer les produits
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <div class="hp-hero-actions" data-reveal style="--d:180ms">
+                    <a class="hp-btn hp-btn-primary" asp-controller="Product" asp-action="Index">
+                        Explorer le catalogue
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </a>
-                    <a class="home-btn home-btn-ghost" href="#selection">Voir les nouveautés</a>
-                </div>
-
-                <div class="home-hero-meta">
-                    @if (heroCategories.Count > 0)
-                    {
-                        foreach (var category in heroCategories)
-                        {
-                            <span>@category.Name</span>
-                        }
-                    }
-                    else
-                    {
-                        <span>Ordinateurs</span>
-                        <span>Smartphones</span>
-                        <span>Écrans</span>
-                        <span>Accessoires</span>
-                    }
-                </div>
-            </div>
-
-            <div class="home-visual">
-                <div class="home-visual-stage">
-                    @if (heroLaptop is not null)
-                    {
-                        <a class="home-visual-card home-visual-main" asp-controller="Product" asp-action="Details" asp-route-id="@heroLaptop.Id">
-                            <img src="@ResolveProductImage(heroLaptop.ImageUrl, heroLaptop.Name)" alt="@heroLaptop.Name" />
-                            <span class="vis-caption">
-                                <span class="vis-cat">@heroLaptop.CategoryName</span>
-                                <span class="vis-name">@heroLaptop.Name</span>
-                            </span>
-                        </a>
-                    }
-
-                    @if (heroPhone is not null)
-                    {
-                        <a class="home-visual-card home-visual-phone" asp-controller="Product" asp-action="Details" asp-route-id="@heroPhone.Id">
-                            <img src="@ResolveProductImage(heroPhone.ImageUrl, heroPhone.Name)" alt="@heroPhone.Name" />
-                            <span class="vis-caption">
-                                <span class="vis-cat">@heroPhone.CategoryName</span>
-                                <span class="vis-name">@heroPhone.Name</span>
-                            </span>
-                        </a>
-                    }
-
-                    @if (heroAudio is not null)
-                    {
-                        <a class="home-visual-card home-visual-chip" asp-controller="Product" asp-action="Details" asp-route-id="@heroAudio.Id">
-                            <img src="@ResolveProductImage(heroAudio.ImageUrl, heroAudio.Name)" alt="@heroAudio.Name" />
-                            <span class="vis-caption">
-                                <span class="vis-cat">@heroAudio.CategoryName</span>
-                                <span class="vis-name">@heroAudio.Name</span>
-                            </span>
-                        </a>
-                    }
-
-                    <div class="home-badge" aria-hidden="true">
-                        <svg class="home-badge-ring" viewBox="0 0 120 120">
-                            <defs>
-                                <path id="tzBadgePath" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0" />
-                            </defs>
-                            <text>
-                                <textPath href="#tzBadgePath" startOffset="0">Sélection TechZone · Édition 2026 ·</textPath>
-                            </text>
+                    <a class="hp-btn hp-btn-ghost" href="#promotions">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 3l2.5 6.2L21 12l-6.5 2.8L12 21l-2.5-6.2L3 12l6.5-2.8z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
                         </svg>
-                        <span class="home-badge-core">
-                            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M12 2l1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7z" fill="currentColor" />
-                            </svg>
-                        </span>
-                    </div>
+                        Voir les offres
+                    </a>
+                </div>
+
+                <ul class="hp-hero-stats" data-reveal style="--d:240ms">
+                    <li><b>120+</b><span>Références premium</span></li>
+                    <li><b>4.9/5</b><span>Satisfaction client</span></li>
+                    <li><b>24h</b><span>Livraison express</span></li>
+                </ul>
+            </div>
+
+            <div class="hp-hero-visual" data-reveal style="--d:220ms">
+                @if (spotlight is not null)
+                {
+                    <article class="hp-spot">
+                        <a class="hp-spot-media" asp-controller="Product" asp-action="Details" asp-route-id="@spotlight.Id" aria-label="Découvrir @spotlight.Name">
+                            <img src="@ResolveProductImage(spotlight.ImageUrl, spotlight.Name)" alt="@spotlight.Name" />
+                        </a>
+                        <div class="hp-spot-body">
+                            <span class="hp-spot-tag">Coup de cœur</span>
+                            <span class="hp-spot-cat">@spotlight.CategoryName</span>
+                            <h2 class="hp-spot-name">
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@spotlight.Id">@spotlight.Name</a>
+                            </h2>
+                            <div class="hp-spot-foot">
+                                <span class="hp-spot-price">@spotlight.Price.ToString("N2") €</span>
+                                <a class="hp-spot-cta" asp-controller="Product" asp-action="Details" asp-route-id="@spotlight.Id">
+                                    Découvrir
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                }
+
+                <div class="hp-float hp-float-a" aria-hidden="true">
+                    <span class="hp-float-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 3 5 6v6c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6l-7-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                            <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                    <span><b>Garantie 12 mois</b><small>Produits officiels</small></span>
+                </div>
+
+                <div class="hp-float hp-float-b" aria-hidden="true">
+                    <span class="hp-float-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                            <rect x="4" y="10" width="16" height="10" rx="2.4" stroke="currentColor" stroke-width="1.7" />
+                            <path d="M8 10V7.5a4 4 0 0 1 8 0V10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                        </svg>
+                    </span>
+                    <span><b>Paiement sécurisé</b><small>3D Secure</small></span>
                 </div>
             </div>
         </div>
 
-        <div class="tz-container">
-            <ul class="home-values">
-                <li class="home-value">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <rect x="4" y="4" width="7" height="7" rx="1.6" stroke="currentColor" stroke-width="2" />
-                        <rect x="13" y="4" width="7" height="7" rx="1.6" stroke="currentColor" stroke-width="2" />
-                        <rect x="4" y="13" width="7" height="7" rx="1.6" stroke="currentColor" stroke-width="2" />
-                        <rect x="13" y="13" width="7" height="7" rx="1.6" stroke="currentColor" stroke-width="2" />
-                    </svg>
-                    Catalogue complet
-                </li>
-                <li class="home-value">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M7 3h7l4 4v14H7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
-                        <path d="M14 3v4h4M10 12h5M10 16h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                    </svg>
-                    Fiches détaillées
-                </li>
-                <li class="home-value">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <rect x="3" y="6" width="18" height="12" rx="2.4" stroke="currentColor" stroke-width="2" />
-                        <path d="M3 10h18M7 15h3" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                    </svg>
-                    Paiement en ligne
-                </li>
-                <li class="home-value">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M3 7h11v10H3zM14 10h4l3 3v4h-7" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
-                        <circle cx="7" cy="18" r="1.8" stroke="currentColor" stroke-width="2" />
-                        <circle cx="17.5" cy="18" r="1.8" stroke="currentColor" stroke-width="2" />
-                    </svg>
-                    Suivi de commande
-                </li>
-            </ul>
-        </div>
+        <a class="hp-scroll" href="#univers" aria-label="Faire défiler vers le contenu">
+            <span class="hp-scroll-line" aria-hidden="true"></span>
+            Défiler
+        </a>
     </section>
 
+    @* ============================ MARQUEE ============================ *@
+    <div class="hp-marquee" aria-hidden="true">
+        <div class="hp-marquee-track">
+            @for (var pass = 0; pass < 2; pass++)
+            {
+                foreach (var item in marqueeItems)
+                {
+                    <span class="hp-marquee-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2l1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7z" fill="currentColor" />
+                        </svg>
+                        @item
+                    </span>
+                }
+            }
+        </div>
+    </div>
+
     @* ============================ CATEGORIES ============================ *@
-    <section class="home-section" aria-labelledby="categories-title">
+    <section class="hp-section" id="univers" aria-labelledby="hp-cats-title">
         <div class="tz-container">
-            <div class="home-section-head">
-                <div>
-                    <span class="home-kicker">Explorer par catégorie</span>
-                    <h2 class="home-section-title" id="categories-title">Trouvez votre prochain essentiel.</h2>
-                    <p class="home-section-lead">Quatre univers complémentaires pour composer un environnement technologique cohérent.</p>
+            <header class="hp-head" data-reveal>
+                <div class="hp-head-main">
+                    <span class="hp-kicker">Explorer par univers</span>
+                    <h2 class="hp-title" id="hp-cats-title">Trouvez votre prochain essentiel.</h2>
+                    <p class="hp-lead">
+                        Quatre univers complémentaires pour composer un environnement
+                        technologique cohérent, pensé pour votre quotidien.
+                    </p>
                 </div>
-                <a class="home-section-link" asp-controller="Product" asp-action="Index">
+                <a class="hp-link" asp-controller="Product" asp-action="Index">
                     Tout le catalogue
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </a>
-            </div>
+            </header>
 
-            @if (Model.Categories.Count > 0)
+            @if (categories.Count > 0)
             {
-                <div class="home-cats">
-                    @foreach (var category in Model.Categories)
+                <div class="hp-cats">
+                    @for (var i = 0; i < categories.Count; i++)
                     {
-                        var name = category.Name;
-                        var isLaptop = name.Contains("Ordinateur", StringComparison.OrdinalIgnoreCase);
-                        var isPhone = name.Contains("Smartphone", StringComparison.OrdinalIgnoreCase) || name.Contains("Téléphone", StringComparison.OrdinalIgnoreCase);
-                        var isScreen = name.Contains("Écran", StringComparison.OrdinalIgnoreCase) || name.Contains("Ecran", StringComparison.OrdinalIgnoreCase);
-
+                        var category = categories[i];
                         var description = category.Description;
                         if (string.IsNullOrWhiteSpace(description))
                         {
-                            description = isLaptop ? "Puissance et mobilité pour travailler et créer."
-                                : isPhone ? "Des mobiles connectés à votre quotidien."
-                                : isScreen ? "Des moniteurs pensés pour chaque usage."
-                                : "Périphériques et audio pour compléter votre setup.";
+                            description = "Une sélection soignée pour votre setup.";
                         }
 
-                        <a class="home-cat" asp-controller="Product" asp-action="Index" asp-route-categoryId="@category.Id">
-                            <span class="home-cat-arrow" aria-hidden="true">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                    <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </span>
-
-                            <div class="home-cat-art">
-                                @if (isLaptop)
+                        <a class="hp-cat" asp-controller="Product" asp-action="Index" asp-route-categoryId="@category.Id"
+                           data-reveal style="--d:@(i * 80)ms">
+                            <span class="hp-cat-media">
+                                @if (!string.IsNullOrWhiteSpace(category.ImageUrl))
                                 {
-                                    <svg viewBox="0 0 160 120" fill="none" aria-hidden="true">
-                                        <rect x="34" y="24" width="92" height="60" rx="6" stroke="currentColor" stroke-width="3" />
-                                        <rect x="41" y="31" width="78" height="46" rx="3" stroke="currentColor" stroke-width="2" opacity=".6" />
-                                        <path d="M52 66c8-15 16-21 24-15 7 5 11 12 18 4 5-5 8-9 14-2" stroke="#c02444" stroke-width="3" stroke-linecap="round" />
-                                        <path d="M22 92h116l-8 10H30z" stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
-                                        <path d="M68 96h24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
-                                    </svg>
-                                }
-                                else if (isPhone)
-                                {
-                                    <svg viewBox="0 0 160 120" fill="none" aria-hidden="true">
-                                        <rect x="60" y="14" width="42" height="92" rx="10" stroke="currentColor" stroke-width="3" />
-                                        <rect x="66" y="21" width="30" height="70" rx="5" stroke="currentColor" stroke-width="2" opacity=".55" />
-                                        <path d="M72 42c6-6 12-6 18 0v18c-5 5-12 6-18 2z" fill="#c02444" opacity=".16" />
-                                        <path d="M72 42c6-6 12-6 18 0" stroke="#c02444" stroke-width="2.4" stroke-linecap="round" />
-                                        <circle cx="81" cy="98" r="2.6" fill="#c02444" />
-                                        <path d="M118 34c6 4 6 12 0 16M126 28c9 7 9 21 0 28" stroke="#c02444" stroke-width="2.4" stroke-linecap="round" opacity=".8" />
-                                    </svg>
-                                }
-                                else if (isScreen)
-                                {
-                                    <svg viewBox="0 0 160 120" fill="none" aria-hidden="true">
-                                        <rect x="26" y="20" width="108" height="66" rx="6" stroke="currentColor" stroke-width="3" />
-                                        <rect x="33" y="27" width="94" height="52" rx="3" stroke="currentColor" stroke-width="2" opacity=".55" />
-                                        <path d="M41 68l20-22 14 13 16-18 22 27z" fill="#c02444" opacity=".16" />
-                                        <path d="M41 68l20-22 14 13 16-18 22 27" stroke="#c02444" stroke-width="2.4" stroke-linejoin="round" />
-                                        <path d="M70 86v9m20-9v9m-30 6h40" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-                                    </svg>
+                                    <img src="@category.ImageUrl" alt="@category.Name" loading="lazy" />
                                 }
                                 else
                                 {
-                                    <svg viewBox="0 0 160 120" fill="none" aria-hidden="true">
-                                        <path d="M56 70V58a24 24 0 0 1 48 0v12" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-                                        <rect x="48" y="66" width="14" height="26" rx="7" fill="#fff" stroke="currentColor" stroke-width="3" />
-                                        <rect x="98" y="66" width="14" height="26" rx="7" fill="#fff" stroke="currentColor" stroke-width="3" />
-                                        <path d="M105 92c-3 8-11 12-21 12h-6" stroke="#c02444" stroke-width="2.6" stroke-linecap="round" />
-                                        <circle cx="74" cy="104" r="3" fill="#c02444" />
-                                        <path d="M36 34c6 0 10 4 10 10v6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".45" />
-                                    </svg>
+                                    <span class="hp-cat-fallback" aria-hidden="true">
+                                        <svg viewBox="0 0 120 120" fill="none">
+                                            <circle cx="60" cy="60" r="46" stroke="currentColor" stroke-width="1.4" opacity=".4" />
+                                            <circle cx="60" cy="60" r="30" stroke="currentColor" stroke-width="1.4" opacity=".25" />
+                                            <circle cx="60" cy="14" r="4" fill="currentColor" />
+                                            <circle cx="104" cy="74" r="3" fill="currentColor" opacity=".7" />
+                                            <path d="M60 30v60M30 60h60" stroke="currentColor" stroke-width="1.2" opacity=".3" />
+                                        </svg>
+                                    </span>
                                 }
-                            </div>
-
-                            <div class="home-cat-info">
-                                <div class="home-cat-name">@category.Name</div>
-                                <div class="home-cat-desc">@description</div>
-                            </div>
+                            </span>
+                            <span class="hp-cat-index" aria-hidden="true">0@(i + 1)</span>
+                            <span class="hp-cat-info">
+                                <span class="hp-cat-name">@category.Name</span>
+                                <span class="hp-cat-desc">@description</span>
+                            </span>
+                            <span class="hp-cat-arrow" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </span>
                         </a>
                     }
                 </div>
-
-                <a class="home-cat-all" asp-controller="Product" asp-action="Index">
-                    <strong>Explorer l'ensemble du catalogue</strong>
-                    <span>
-                        Voir tous les produits
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </span>
-                </a>
+            }
+            else
+            {
+                <div class="hp-empty" data-reveal>
+                    <p>Le catalogue se prépare. Revenez très prochainement.</p>
+                    <a class="hp-btn hp-btn-primary" asp-controller="Product" asp-action="Index">Voir le catalogue</a>
+                </div>
             }
         </div>
     </section>
 
-    @* ============================ SELECTION ============================ *@
-    <section class="home-section" id="selection" aria-labelledby="selection-title">
+    @* ============================ PROMOTIONS ============================ *@
+    <section class="hp-section" id="promotions" aria-labelledby="hp-promos-title">
         <div class="tz-container">
-            <div class="home-section-head">
-                <div>
-                    <span class="home-kicker">Sélection du moment</span>
-                    <h2 class="home-section-title" id="selection-title">Des produits pensés pour durer.</h2>
-                    <p class="home-section-lead">Une sélection resserrée d'ordinateurs, mobiles et accessoires choisis pour leur cohérence.</p>
+            <header class="hp-head" data-reveal>
+                <div class="hp-head-main">
+                    <span class="hp-kicker">Offres &amp; nouveautés</span>
+                    <h2 class="hp-title" id="hp-promos-title">Des offres taillées pour vous.</h2>
                 </div>
-                <a class="home-section-link" asp-controller="Product" asp-action="Index">
-                    Voir tous les produits
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <a class="hp-link" asp-controller="Product" asp-action="Index">
+                    Toutes les offres
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </a>
-            </div>
+            </header>
 
-            @if (selection.Count > 0)
-            {
-                <div class="home-products">
-                    @foreach (var product in selection)
+            <div class="hp-promos">
+                <article class="hp-promo hp-promo-feature" data-reveal>
+                    <div class="hp-promo-content">
+                        <span class="hp-promo-tag">Offre de la semaine</span>
+                        <h3 class="hp-promo-title">Jusqu'à <em>-20%</em> sur la sélection audio&nbsp;&amp;&nbsp;accessoires.</h3>
+                        <p class="hp-promo-text">
+                            Casques, claviers et chargeurs à prix réduit. Une sélection limitée,
+                            à saisir tant qu'il en reste.
+                        </p>
+
+                        <div class="hp-count" data-countdown aria-label="Fin de l'offre">
+                            <span class="hp-count-cell"><b data-cd="d">00</b><i>Jours</i></span>
+                            <span class="hp-count-sep" aria-hidden="true">:</span>
+                            <span class="hp-count-cell"><b data-cd="h">00</b><i>Heures</i></span>
+                            <span class="hp-count-sep" aria-hidden="true">:</span>
+                            <span class="hp-count-cell"><b data-cd="m">00</b><i>Min</i></span>
+                            <span class="hp-count-sep" aria-hidden="true">:</span>
+                            <span class="hp-count-cell"><b data-cd="s">00</b><i>Sec</i></span>
+                        </div>
+
+                        <a class="hp-btn hp-btn-light" asp-controller="Product" asp-action="Index">
+                            Profiter de l'offre
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    @if (deal is not null)
                     {
-                        <article class="home-product">
-                            <a class="home-product-media" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" aria-label="Découvrir @product.Name">
-                                <img src="@ResolveProductImage(product.ImageUrl, product.Name)" alt="@product.Name" loading="lazy" />
-                                <span class="home-product-arrow" aria-hidden="true">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                                        <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <div class="hp-promo-media">
+                            <span class="hp-promo-badge">-20%</span>
+                            <img src="@ResolveProductImage(deal.ImageUrl, deal.Name)" alt="@deal.Name" loading="lazy" />
+                        </div>
+                    }
+                </article>
+
+                <div class="hp-promo-side">
+                    <a class="hp-promo hp-promo-mini hp-promo-new" asp-controller="Product" asp-action="Index" data-reveal style="--d:80ms">
+                        <span class="hp-promo-mini-icon" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2l1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                        <span class="hp-promo-mini-kicker">Nouveautés</span>
+                        <span class="hp-promo-mini-title">Les dernières arrivées</span>
+                        <span class="hp-promo-mini-cta">
+                            Découvrir
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                    </a>
+
+                    <a class="hp-promo hp-promo-mini hp-promo-gear" asp-controller="Product" asp-action="Index" data-reveal style="--d:160ms">
+                        <span class="hp-promo-mini-icon" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="6" width="18" height="12" rx="2.4" stroke="currentColor" stroke-width="1.6" />
+                                <path d="M7 10h6M7 14h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                            </svg>
+                        </span>
+                        <span class="hp-promo-mini-kicker">Accessoires</span>
+                        <span class="hp-promo-mini-title">Complétez votre setup</span>
+                        <span class="hp-promo-mini-cta">
+                            Explorer
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @* ============================ PRODUCTS ============================ *@
+    <section class="hp-section" id="selection" aria-labelledby="hp-picks-title">
+        <div class="tz-container">
+            <header class="hp-head" data-reveal>
+                <div class="hp-head-main">
+                    <span class="hp-kicker">Sélection du moment</span>
+                    <h2 class="hp-title" id="hp-picks-title">Des produits pensés pour durer.</h2>
+                    <p class="hp-lead">
+                        Une sélection resserrée d'ordinateurs, mobiles et accessoires
+                        choisis pour leur cohérence et leur qualité.
+                    </p>
+                </div>
+                <a class="hp-link" asp-controller="Product" asp-action="Index">
+                    Voir tous les produits
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+            </header>
+
+            @if (picks.Count > 0)
+            {
+                <div class="hp-products">
+                    @for (var i = 0; i < picks.Count; i++)
+                    {
+                        var product = picks[i];
+                        <article class="hp-card" data-reveal style="--d:@(i * 60)ms">
+                            <a class="hp-card-media" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" aria-label="Voir @product.Name">
+                                <img src="@ResolveProductImage(product.ImageUrl, product.Name)" alt="@product.Name" loading="lazy" decoding="async" />
+                                <span class="hp-card-shine" aria-hidden="true"></span>
+                                <span class="hp-card-badge @(product.IsInStock ? "is-new" : "is-out")">
+                                    @(product.IsInStock ? (i == 0 ? "Coup de cœur" : "Nouveau") : "Rupture")
+                                </span>
+                                <span class="hp-card-quick">
+                                    Voir le produit
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
                                 </span>
                             </a>
-                            <div class="home-product-body">
-                                <span class="home-product-cat">@product.CategoryName</span>
-                                <h3 class="home-product-name">
+
+                            <div class="hp-card-body">
+                                <span class="hp-card-cat">@product.CategoryName</span>
+                                <h3 class="hp-card-name">
                                     <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a>
                                 </h3>
-                                <div class="home-product-foot">
-                                    <span class="home-product-price">@product.Price.ToString("N2") €</span>
-                                    <a class="home-product-cta" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">
-                                        Voir le produit
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                <div class="hp-card-rating" aria-label="Note 4.8 sur 5">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                        <path d="m12 3 2.7 5.9 6.3.7-4.7 4.3 1.3 6.2L12 17.9 6.4 20.4l1.3-6.2L3 9.9l6.3-.7z" />
+                                    </svg>
+                                    <span>4.8</span>
+                                    <i>·</i>
+                                    <span class="hp-card-stock">@(product.IsInStock ? "En stock" : "Indisponible")</span>
+                                </div>
+                                <div class="hp-card-foot">
+                                    <span class="hp-card-price">@product.Price.ToString("N2") €</span>
+                                    <a class="hp-card-arrow" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" aria-label="Détails de @product.Name">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                         </svg>
                                     </a>
                                 </div>
@@ -352,56 +420,86 @@
             }
             else
             {
-                <div class="home-cat-all">
-                    <strong>Le catalogue se prépare</strong>
-                    <span>Revenez prochainement pour découvrir la sélection.</span>
+                <div class="hp-empty" data-reveal>
+                    <p>La sélection se prépare. Revenez prochainement.</p>
+                    <a class="hp-btn hp-btn-primary" asp-controller="Product" asp-action="Index">Explorer le catalogue</a>
                 </div>
             }
         </div>
     </section>
 
-    @* ============================ EDITORIAL ============================ *@
-    <section class="home-editorial" aria-labelledby="editorial-title">
+    @* ============================ STORY ============================ *@
+    <section class="hp-story" aria-labelledby="hp-story-title">
         <div class="tz-container">
-            <div class="home-editorial-inner">
-                <div class="home-editorial-copy">
-                    <span class="home-kicker">Curation TechZone</span>
-                    <h2 class="home-editorial-title" id="editorial-title">Choisir mieux.<br />Vivre mieux.</h2>
-                    <p class="home-editorial-text">
+            <div class="hp-story-inner">
+                <div class="hp-story-copy" data-reveal>
+                    <span class="hp-kicker hp-kicker-light">La maison TechZone</span>
+                    <h2 class="hp-story-title" id="hp-story-title">Choisir mieux.<br />Vivre mieux.</h2>
+                    <p class="hp-story-text">
                         Nous réunissons des équipements qui se complètent : une machine pour créer,
                         un mobile pour rester connecté, des accessoires pour affiner l'expérience.
-                        Une sélection lisible, sans superflu.
+                        Une sélection lisible, sans superflu — et un service à la hauteur.
                     </p>
-                    <div class="home-editorial-actions">
-                        <a class="home-btn home-btn-light" asp-controller="Product" asp-action="Index">
-                            Parcourir le catalogue
+                    <ul class="hp-story-list">
+                        <li>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
-                        </a>
-                    </div>
+                            Produits authentiques, garantis et suivis
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Conseil personnalisé par des experts
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Livraison rapide partout en Tunisie
+                        </li>
+                    </ul>
+                    <a class="hp-btn hp-btn-light" asp-controller="Product" asp-action="Index">
+                        Parcourir le catalogue
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
                 </div>
 
-                @if (editorialProduct is not null)
-                {
-                    <div class="home-editorial-art">
-                        <img src="@ResolveProductImage(editorialProduct.ImageUrl, editorialProduct.Name)" alt="@editorialProduct.Name" loading="lazy" />
+                <div class="hp-story-stats" data-reveal style="--d:120ms">
+                    <div class="hp-stat">
+                        <b data-count="120" data-suffix="+">120+</b>
+                        <span>Références sélectionnées</span>
                     </div>
-                }
+                    <div class="hp-stat">
+                        <b data-count="10" data-suffix="k+">10k+</b>
+                        <span>Clients satisfaits</span>
+                    </div>
+                    <div class="hp-stat">
+                        <b data-count="4.9" data-decimals="1">4.9</b>
+                        <span>Note moyenne / 5</span>
+                    </div>
+                    <div class="hp-stat">
+                        <b data-count="12" data-suffix=" mois">12</b>
+                        <span>Garantie officielle</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     @* ============================ FAQ ============================ *@
-    <section class="home-section" aria-labelledby="faq-title">
+    <section class="hp-section" aria-labelledby="hp-faq-title">
         <div class="tz-container home-faq-grid">
-            <div class="home-faq-head">
-                <span class="home-kicker">Questions fréquentes</span>
-                <h2 class="home-section-title" id="faq-title">Vous avez une question ?</h2>
-                <p class="home-section-lead">Quelques réponses pour vous aider à choisir.</p>
+            <div class="home-faq-head" data-reveal>
+                <span class="hp-kicker">Questions fréquentes</span>
+                <h2 class="hp-title" id="hp-faq-title">Vous avez une question ?</h2>
+                <p class="hp-lead">Quelques réponses pour vous aider à choisir en toute confiance.</p>
             </div>
 
-            <div class="home-faq-list">
+            <div class="home-faq-list" data-reveal style="--d:80ms">
                 <div class="home-faq-item">
                     <button class="home-faq-trigger" type="button" aria-expanded="false" aria-controls="faq-panel-1">
                         Comment trouver un produit sur TechZone ?
@@ -445,24 +543,10 @@
 
                 <div class="home-faq-item">
                     <button class="home-faq-trigger" type="button" aria-expanded="false" aria-controls="faq-panel-4">
-                        Comment accéder au catalogue ?
-                        <span class="home-faq-icon" aria-hidden="true"></span>
-                    </button>
-                    <div class="home-faq-panel" id="faq-panel-4" role="region">
-                        <p class="home-faq-panel-inner">
-                            Cliquez sur « Catalogue » dans la navigation ou sur l'un des boutons
-                            « Explorer les produits ». Le catalogue complet est également accessible
-                            depuis le pied de page.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="home-faq-item">
-                    <button class="home-faq-trigger" type="button" aria-expanded="false" aria-controls="faq-panel-5">
                         Comment suivre mes commandes ?
                         <span class="home-faq-icon" aria-hidden="true"></span>
                     </button>
-                    <div class="home-faq-panel" id="faq-panel-5" role="region">
+                    <div class="home-faq-panel" id="faq-panel-4" role="region">
                         <p class="home-faq-panel-inner">
                             Une fois connecté, ouvrez votre compte puis « Mes commandes »
                             pour consulter l'historique et le détail de vos commandes.
@@ -471,11 +555,11 @@
                 </div>
 
                 <div class="home-faq-item">
-                    <button class="home-faq-trigger" type="button" aria-expanded="false" aria-controls="faq-panel-6">
+                    <button class="home-faq-trigger" type="button" aria-expanded="false" aria-controls="faq-panel-5">
                         Ai-je besoin d'un compte pour commander ?
                         <span class="home-faq-icon" aria-hidden="true"></span>
                     </button>
-                    <div class="home-faq-panel" id="faq-panel-6" role="region">
+                    <div class="home-faq-panel" id="faq-panel-5" role="region">
                         <p class="home-faq-panel-inner">
                             Oui. La création d'un compte est nécessaire pour ajouter des produits
                             au panier et finaliser une commande. Vous pouvez vous connecter
@@ -487,22 +571,35 @@
         </div>
     </section>
 
-    @* ============================ CTA ============================ *@
-    <section class="home-cta" aria-labelledby="home-cta-title">
+    @* ============================ NEWSLETTER CTA ============================ *@
+    <section class="hp-section hp-cta-section" aria-labelledby="hp-cta-title">
         <div class="tz-container">
-            <div class="home-cta-inner">
-                <div class="home-cta-copy">
-                    <span class="home-kicker">Et maintenant</span>
-                    <h2 class="home-cta-title" id="home-cta-title">La bonne technologie commence ici.</h2>
+            <div class="hp-cta" data-reveal>
+                <div class="hp-cta-copy">
+                    <span class="hp-kicker hp-kicker-light">Le cercle TechZone</span>
+                    <h2 class="hp-cta-title" id="hp-cta-title">Restez à la pointe.</h2>
+                    <p class="hp-cta-text">
+                        Nouveautés, offres privées et conseils d'experts — l'essentiel,
+                        une fois par mois. Pas de spam.
+                    </p>
                 </div>
-                <div class="home-cta-actions">
-                    <a class="home-btn home-btn-primary" asp-controller="Product" asp-action="Index">
-                        Découvrir le catalogue
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+
+                <form class="hp-news" data-news novalidate>
+                    <div class="hp-news-field">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.7" />
+                            <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                    </a>
-                </div>
+                        <input type="email" name="email" placeholder="Votre adresse e-mail" aria-label="Votre adresse e-mail" required />
+                        <button type="submit">
+                            S'inscrire
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="hp-news-note" data-news-note role="status">En vous inscrivant, vous acceptez notre politique de confidentialité.</p>
+                </form>
             </div>
         </div>
     </section>

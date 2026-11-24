@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Ordinateurs portables">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#1b2a56"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.18" r="0.85">
+      <stop offset="0" stop-color="#2f6bff" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#2f6bff" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".06"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <rect width="800" height="500" fill="url(#grid)"/>
+  <rect width="800" height="500" fill="url(#glow)"/>
+  <g fill="none" stroke="#dfe8ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="250" y="158" width="300" height="192" rx="16"/>
+    <path d="M206 384h388l-30 40H236z"/>
+    <path d="M300 220h120M300 262h180M300 304h96" stroke-opacity=".5"/>
+  </g>
+  <circle cx="606" cy="132" r="9" fill="#7fb0ff"/>
+  <circle cx="640" cy="160" r="4" fill="#7fb0ff" opacity=".6"/>
+</svg>

@@ -469,6 +469,7 @@ namespace TechZone.Services
                     Id = category.Id,
                     Name = category.Name,
                     Description = category.Description,
+                    ImageUrl = category.ImageUrl,
                     ProductCount = category.Products.Count
                 })
                 .ToListAsync();
@@ -495,7 +496,8 @@ namespace TechZone.Services
             _dbContext.Categories.Add(new Category
             {
                 Name = name,
-                Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim()
+                Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim(),
+                ImageUrl = string.IsNullOrWhiteSpace(model.ImageUrl) ? null : model.ImageUrl.Trim()
             });
 
             await _dbContext.SaveChangesAsync();
@@ -521,6 +523,7 @@ namespace TechZone.Services
 
             category.Name = name;
             category.Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim();
+            category.ImageUrl = string.IsNullOrWhiteSpace(model.ImageUrl) ? null : model.ImageUrl.Trim();
 
             await _dbContext.SaveChangesAsync();
 

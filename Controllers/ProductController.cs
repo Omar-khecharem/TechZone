@@ -124,6 +124,7 @@ namespace TechZone.Controllers
                     Id = category.Id,
                     Name = category.Name,
                     Description = category.Description,
+                    ImageUrl = category.ImageUrl,
                     ProductCount = categoryCounts.TryGetValue(category.Id, out var count) ? count : 0
                 })
                 .ToList();

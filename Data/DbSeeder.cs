@@ -12,6 +12,7 @@ namespace TechZone.Data
             RoleManager<IdentityRole> roleManager)
         {
             await SeedAdminAsync(userManager, roleManager);
+            await SeedCategoryImagesAsync(dbContext);
 
             if (await dbContext.Products.AnyAsync())
             {
@@ -21,7 +22,7 @@ namespace TechZone.Data
 
             var existingCategories = await dbContext.Categories.ToListAsync();
 
-            Category GetCategory(string name, string description)
+            Category GetCategory(string name, string description, string imageUrl)
             {
                 var category = existingCategories.FirstOrDefault(item => item.Name == name);
 
@@ -30,7 +31,8 @@ namespace TechZone.Data
                     category = new Category
                     {
                         Name = name,
-                        Description = description
+                        Description = description,
+                        ImageUrl = imageUrl
                     };
 
                     dbContext.Categories.Add(category);
@@ -42,16 +44,20 @@ namespace TechZone.Data
 
             var laptops = GetCategory(
                 "Ordinateurs portables",
-                "Ordinateurs portables pour le travail, les études et les loisirs.");
+                "Ordinateurs portables pour le travail, les études et les loisirs.",
+                "/images/categories/ordinateurs-portables.svg");
             var smartphones = GetCategory(
                 "Smartphones",
-                "Téléphones mobiles et accessoires associés.");
+                "Téléphones mobiles et accessoires associés.",
+                "/images/categories/smartphones.svg");
             var accessories = GetCategory(
                 "Accessoires",
-                "Périphériques et accessoires pour ordinateurs.");
+                "Périphériques et accessoires pour ordinateurs.",
+                "/images/categories/accessoires.svg");
             var screens = GetCategory(
                 "Écrans",
-                "Moniteurs et écrans haute définition.");
+                "Moniteurs et écrans haute définition.",
+                "/images/categories/ecrans.svg");
 
             var now = DateTime.UtcNow;
 
@@ -192,6 +198,39 @@ namespace TechZone.Data
             await dbContext.SaveChangesAsync();
 
             await SeedDemoOrdersAsync(dbContext, userManager);
+        }
+
+        private static async Task SeedCategoryImagesAsync(ApplicationDbContext dbContext)
+        {
+            var defaults = new Dictionary<string, string>
+            {
+                ["Ordinateurs portables"] = "/images/categories/ordinateurs-portables.svg",
+                ["Smartphones"] = "/images/categories/smartphones.svg",
+                ["Accessoires"] = "/images/categories/accessoires.svg",
+                ["Écrans"] = "/images/categories/ecrans.svg"
+            };
+
+            var categories = await dbContext.Categories.ToListAsync();
+            var changed = false;
+
+            foreach (var category in categories)
+            {
+                if (!string.IsNullOrWhiteSpace(category.ImageUrl))
+                {
+                    continue;
+                }
+
+                if (defaults.TryGetValue(category.Name, out var imageUrl))
+                {
+                    category.ImageUrl = imageUrl;
+                    changed = true;
+                }
+            }
+
+            if (changed)
+            {
+                await dbContext.SaveChangesAsync();
+            }
         }
 
         private static async Task SeedDemoOrdersAsync(
