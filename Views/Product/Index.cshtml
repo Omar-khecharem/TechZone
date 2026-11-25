@@ -106,7 +106,7 @@
         category = product.CategoryName,
         description = product.Description,
         price = product.Price,
-        priceLabel = product.Price.ToString("N2") + " €",
+        priceLabel = product.Price.ToString("N2") + " TND",
         stock = product.Stock,
         inStock = product.IsInStock,
         imageUrl = product.ImageUrl,
@@ -207,13 +207,13 @@
                                     <span class="cat-price-pill">
                                         Min
                                         <span class="cat-price-pill-value">
-                                            <b data-price-min-label>@rangeMin.ToString("N0")</b> €
+                                            <b data-price-min-label>@rangeMin.ToString("N0")</b> TND
                                         </span>
                                     </span>
                                     <span class="cat-price-pill">
                                         Max
                                         <span class="cat-price-pill-value">
-                                            <b data-price-max-label>@rangeMax.ToString("N0")</b> €
+                                            <b data-price-max-label>@rangeMax.ToString("N0")</b> TND
                                         </span>
                                     </span>
                                 </div>

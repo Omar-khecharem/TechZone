@@ -53,7 +53,7 @@ namespace TechZone.ViewModels.Admin
         public string Description { get; set; } = string.Empty;
 
         [Range(typeof(decimal), "0", "99999999.99", ParseLimitsInInvariantCulture = true, ErrorMessage = "Le prix doit être positif.")]
-        [Display(Name = "Prix (€)")]
+        [Display(Name = "Prix (TND)")]
         public decimal Price { get; set; }
 
         [Range(0, int.MaxValue, ErrorMessage = "Le stock doit être positif.")]

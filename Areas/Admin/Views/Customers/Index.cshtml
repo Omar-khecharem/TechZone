@@ -65,7 +65,7 @@
                             </td>
                             <td class="adm-cell-muted">@(string.IsNullOrWhiteSpace(customer.Phone) ? "—" : customer.Phone)</td>
                             <td class="is-end">@customer.OrdersCount</td>
-                            <td class="is-end">@customer.TotalSpent.ToString("N2") €</td>
+                            <td class="is-end">@customer.TotalSpent.ToString("N2") TND</td>
                             <td>
                                 @(customer.LastOrderDate.HasValue
                                     ? customer.LastOrderDate.Value.ToLocalTime().ToString("dd/MM/yyyy")

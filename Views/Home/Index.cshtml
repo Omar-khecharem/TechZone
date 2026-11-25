@@ -47,6 +47,24 @@
     var deal = products.ElementAtOrDefault(1) ?? spotlight;
     var picks = products.Take(8).ToList();
 
+    var heroVideoUrl = Model.HeroVideoUrl;
+    var heroPosterUrl = string.IsNullOrWhiteSpace(Model.HeroPosterUrl)
+        ? Url.Content("~/images/hero/hero-poster.svg")
+        : Model.HeroPosterUrl;
+    var heroVideoExtension = string.IsNullOrWhiteSpace(heroVideoUrl)
+        ? string.Empty
+        : System.IO.Path.GetExtension(heroVideoUrl).ToLowerInvariant();
+    var heroVideoMime = heroVideoExtension switch
+    {
+        ".webm" => "video/webm",
+        ".ogv" => "video/ogg",
+        ".ogg" => "video/ogg",
+        _ => "video/mp4"
+    };
+    var promoImageUrl = string.IsNullOrWhiteSpace(Model.PromoImageUrl)
+        ? (deal is not null ? ResolveProductImage(deal.ImageUrl, deal.Name) : null)
+        : Model.PromoImageUrl;
+
     var marqueeItems = new[]
     {
         "Livraison offerte dès 300 DT",
@@ -63,11 +81,18 @@
     @* ============================ HERO ============================ *@
     <section class="hp-hero" data-hero aria-labelledby="hp-hero-title">
         <div class="hp-hero-media" aria-hidden="true">
-            <div class="hp-hero-fallback"></div>
+            <div class="hp-hero-fallback" style="--hp-hero-poster:url('@heroPosterUrl')"></div>
             <video class="hp-hero-video" data-hero-video autoplay muted loop playsinline preload="auto"
-                   poster="@Url.Content("~/images/hero/hero-poster.svg")">
-                <source src="~/media/hero.webm" type="video/webm" />
-                <source src="~/media/hero.mp4" type="video/mp4" />
+                   poster="@heroPosterUrl">
+                @if (!string.IsNullOrWhiteSpace(heroVideoUrl))
+                {
+                    <source src="@heroVideoUrl" type="@heroVideoMime" />
+                }
+                else
+                {
+                    <source src="~/media/hero.webm" type="video/webm" />
+                    <source src="~/media/hero.mp4" type="video/mp4" />
+                }
             </video>
             <div class="hp-hero-grid"></div>
             <div class="hp-hero-scrim"></div>
@@ -86,8 +111,8 @@
                 </h1>
 
                 <p class="hp-hero-lead" data-reveal style="--d:120ms">
-                    Ordinateurs, smartphones et audio triés sur le volet. Une expérience d'achat
-                    fluide, un accompagnement d'expert et des garanties officielles.
+                    Ordinateurs, smartphones et audio triés sur le volet.
+                    Un accompagnement d'expert, des garanties officielles.
                 </p>
 
                 <div class="hp-hero-actions" data-reveal style="--d:180ms">
@@ -105,58 +130,28 @@
                     </a>
                 </div>
 
-                <ul class="hp-hero-stats" data-reveal style="--d:240ms">
-                    <li><b>120+</b><span>Références premium</span></li>
-                    <li><b>4.9/5</b><span>Satisfaction client</span></li>
-                    <li><b>24h</b><span>Livraison express</span></li>
-                </ul>
-            </div>
-
-            <div class="hp-hero-visual" data-reveal style="--d:220ms">
-                @if (spotlight is not null)
-                {
-                    <article class="hp-spot">
-                        <a class="hp-spot-media" asp-controller="Product" asp-action="Details" asp-route-id="@spotlight.Id" aria-label="Découvrir @spotlight.Name">
-                            <img src="@ResolveProductImage(spotlight.ImageUrl, spotlight.Name)" alt="@spotlight.Name" />
-                        </a>
-                        <div class="hp-spot-body">
-                            <span class="hp-spot-tag">Coup de cœur</span>
-                            <span class="hp-spot-cat">@spotlight.CategoryName</span>
-                            <h2 class="hp-spot-name">
-                                <a asp-controller="Product" asp-action="Details" asp-route-id="@spotlight.Id">@spotlight.Name</a>
-                            </h2>
-                            <div class="hp-spot-foot">
-                                <span class="hp-spot-price">@spotlight.Price.ToString("N2") €</span>
-                                <a class="hp-spot-cta" asp-controller="Product" asp-action="Details" asp-route-id="@spotlight.Id">
-                                    Découvrir
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-                }
-
-                <div class="hp-float hp-float-a" aria-hidden="true">
-                    <span class="hp-float-icon">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                <ul class="hp-hero-tags" data-reveal style="--d:240ms">
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M3 12h13l-3-3m3 3-3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" transform="translate(2 0)" />
+                        </svg>
+                        Livraison 24h
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M12 3 5 6v6c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6l-7-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
                             <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                    </span>
-                    <span><b>Garantie 12 mois</b><small>Produits officiels</small></span>
-                </div>
-
-                <div class="hp-float hp-float-b" aria-hidden="true">
-                    <span class="hp-float-icon">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                        Garantie 12 mois
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <rect x="4" y="10" width="16" height="10" rx="2.4" stroke="currentColor" stroke-width="1.7" />
                             <path d="M8 10V7.5a4 4 0 0 1 8 0V10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
                         </svg>
-                    </span>
-                    <span><b>Paiement sécurisé</b><small>3D Secure</small></span>
-                </div>
+                        Paiement sécurisé
+                    </li>
+                </ul>
             </div>
         </div>
 
@@ -304,11 +299,11 @@
                         </a>
                     </div>
 
-                    @if (deal is not null)
+                    @if (!string.IsNullOrWhiteSpace(promoImageUrl))
                     {
                         <div class="hp-promo-media">
                             <span class="hp-promo-badge">-20%</span>
-                            <img src="@ResolveProductImage(deal.ImageUrl, deal.Name)" alt="@deal.Name" loading="lazy" />
+                            <img src="@promoImageUrl" alt="Offre de la semaine" loading="lazy" />
                         </div>
                     }
                 </article>
@@ -406,7 +401,7 @@
                                     <span class="hp-card-stock">@(product.IsInStock ? "En stock" : "Indisponible")</span>
                                 </div>
                                 <div class="hp-card-foot">
-                                    <span class="hp-card-price">@product.Price.ToString("N2") €</span>
+                                    <span class="hp-card-price">@product.Price.ToString("N2") TND</span>
                                     <a class="hp-card-arrow" asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" aria-label="Détails de @product.Name">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                             <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />

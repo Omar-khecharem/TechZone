@@ -22,7 +22,7 @@
         <div class="adm-detail-grid">
             <div>
                 <span class="adm-detail-label">Montant total</span>
-                <strong class="adm-detail-value">@Model.TotalAmount.ToString("N2") €</strong>
+                <strong class="adm-detail-value">@Model.TotalAmount.ToString("N2") TND</strong>
             </div>
             <div>
                 <span class="adm-detail-label">Paiement</span>
@@ -89,16 +89,16 @@
                 {
                     <tr>
                         <td><span class="adm-product-name">@item.ProductName</span></td>
-                        <td class="is-end">@item.UnitPrice.ToString("N2") €</td>
+                        <td class="is-end">@item.UnitPrice.ToString("N2") TND</td>
                         <td class="is-end">@item.Quantity</td>
-                        <td class="is-end">@item.LineTotal.ToString("N2") €</td>
+                        <td class="is-end">@item.LineTotal.ToString("N2") TND</td>
                     </tr>
                 }
             </tbody>
             <tfoot>
                 <tr>
                     <td colspan="3" class="is-end">Total</td>
-                    <td class="is-end"><strong>@Model.TotalAmount.ToString("N2") €</strong></td>
+                    <td class="is-end"><strong>@Model.TotalAmount.ToString("N2") TND</strong></td>
                 </tr>
             </tfoot>
         </table>

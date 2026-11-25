@@ -84,7 +84,7 @@
             </svg>
         </span>
         <span class="adm-kpi-label">Chiffre d'affaires</span>
-        <strong class="adm-kpi-value">@Model.TotalRevenue.ToString("N2") €</strong>
+        <strong class="adm-kpi-value">@Model.TotalRevenue.ToString("N2") TND</strong>
         <span class="adm-kpi-meta">
             <span class="adm-trend @GrowthClass(Model.RevenueGrowthPercent)">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -104,7 +104,7 @@
             </svg>
         </span>
         <span class="adm-kpi-label">Revenu du mois</span>
-        <strong class="adm-kpi-value">@Model.RevenueThisMonth.ToString("N2") €</strong>
+        <strong class="adm-kpi-value">@Model.RevenueThisMonth.ToString("N2") TND</strong>
         <span class="adm-kpi-meta">@Model.OrdersThisMonth commande(s) ce mois-ci</span>
     </article>
 
@@ -136,7 +136,7 @@
             </svg>
         </span>
         <span class="adm-kpi-label">Panier moyen</span>
-        <strong class="adm-kpi-value">@Model.AverageOrderValue.ToString("N2") €</strong>
+        <strong class="adm-kpi-value">@Model.AverageOrderValue.ToString("N2") TND</strong>
         <span class="adm-kpi-meta">@Model.ActiveCustomersThisMonth client(s) actif(s) ce mois</span>
     </article>
 </section>
@@ -175,7 +175,7 @@
                 <h2 class="adm-card-title">Évolution du chiffre d'affaires</h2>
                 <p class="adm-card-sub">12 derniers mois · commandes hors annulations</p>
             </div>
-            <span class="adm-card-pill">@Model.TotalRevenue.ToString("N2") € cumulés</span>
+            <span class="adm-card-pill">@Model.TotalRevenue.ToString("N2") TND cumulés</span>
         </header>
 
         <div class="adm-linechart-wrap">
@@ -208,7 +208,7 @@
                     {
                         <circle cx="@F(point.X)" cy="@F(point.Y)" r="@(point.IsCurrent ? "4.6" : "3.2")"
                                 fill="#fff" stroke="#2563eb" stroke-width="2">
-                            <title>@point.Label : @point.Amount.ToString("N2") €</title>
+                            <title>@point.Label : @point.Amount.ToString("N2") TND</title>
                         </circle>
                     }
                 }
@@ -277,7 +277,7 @@
                     <li class="adm-bar-row">
                         <div class="adm-bar-head">
                             <span class="adm-bar-name">@product.Name</span>
-                            <span class="adm-bar-value">@product.Revenue.ToString("N2") €</span>
+                            <span class="adm-bar-value">@product.Revenue.ToString("N2") TND</span>
                         </div>
                         <div class="adm-bar-track">
                             <span class="adm-bar-fill" style="width: @F(width)%;"></span>
@@ -314,7 +314,7 @@
                     <li class="adm-bar-row">
                         <div class="adm-bar-head">
                             <span class="adm-bar-name">@category.Name</span>
-                            <span class="adm-bar-value">@category.Revenue.ToString("N2") €</span>
+                            <span class="adm-bar-value">@category.Revenue.ToString("N2") TND</span>
                         </div>
                         <div class="adm-bar-track">
                             <span class="adm-bar-fill is-violet" style="width: @F(width)%;"></span>
@@ -406,7 +406,7 @@
                                     <span class="adm-order-meta">@order.CustomerEmail</span>
                                 </td>
                                 <td>@order.OrderDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                                <td class="is-end">@order.TotalAmount.ToString("N2") €</td>
+                                <td class="is-end">@order.TotalAmount.ToString("N2") TND</td>
                                 <td><span class="adm-badge @order.StatusBadgeClass">@order.StatusLabel</span></td>
                                 <td class="is-end">
                                     <a class="adm-icon-btn" asp-area="Admin" asp-controller="Orders"
@@ -489,7 +489,7 @@
                                 </div>
                                 <span class="adm-order-meta">@customer.OrdersCount commande(s)</span>
                             </div>
-                            <span class="adm-customer-spent">@customer.TotalSpent.ToString("N2") €</span>
+                            <span class="adm-customer-spent">@customer.TotalSpent.ToString("N2") TND</span>
                         </li>
                     }
                 </ul>

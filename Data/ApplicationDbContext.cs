@@ -23,6 +23,8 @@ namespace TechZone.Data
 
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
+        public DbSet<HomeMedia> HomeMedia => Set<HomeMedia>();
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -114,6 +116,13 @@ namespace TechZone.Data
                     table.HasCheckConstraint("CK_OrderItems_UnitPrice", "[UnitPrice] >= 0");
                     table.HasCheckConstraint("CK_OrderItems_Quantity", "[Quantity] > 0");
                 });
+            });
+
+            builder.Entity<HomeMedia>(entity =>
+            {
+                entity.Property(media => media.HeroVideoUrl).HasMaxLength(500);
+                entity.Property(media => media.HeroPosterUrl).HasMaxLength(500);
+                entity.Property(media => media.PromoImageUrl).HasMaxLength(500);
             });
         }
     }

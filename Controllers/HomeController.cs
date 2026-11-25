@@ -9,10 +9,12 @@ namespace TechZone.Controllers
     public class HomeController : Controller
     {
         private readonly IProductService _productService;
+        private readonly IHomeMediaService _homeMediaService;
 
-        public HomeController(IProductService productService)
+        public HomeController(IProductService productService, IHomeMediaService homeMediaService)
         {
             _productService = productService;
+            _homeMediaService = homeMediaService;
         }
 
         public async Task<IActionResult> Index()
@@ -27,6 +29,7 @@ namespace TechZone.Controllers
                 page: 1,
                 pageSize: 12);
             var categories = await _productService.GetCategoriesAsync();
+            var homeMedia = await _homeMediaService.GetAsync();
             var categoryViewModels = categories
                 .Select(category => new CategoryFilterViewModel
                 {
@@ -55,7 +58,10 @@ namespace TechZone.Controllers
                         SalesCount = product.SalesCount
                     })
                     .ToList(),
-                Categories = categoryViewModels
+                Categories = categoryViewModels,
+                HeroVideoUrl = homeMedia.HeroVideoUrl,
+                HeroPosterUrl = homeMedia.HeroPosterUrl,
+                PromoImageUrl = homeMedia.PromoImageUrl
             });
         }
 

@@ -690,9 +690,9 @@
       return new Intl.NumberFormat('fr-FR', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
-      }).format(number) + ' €';
+      }).format(number) + ' TND';
     } catch (error) {
-      return number.toFixed(2) + ' €';
+      return number.toFixed(2) + ' TND';
     }
   };
 

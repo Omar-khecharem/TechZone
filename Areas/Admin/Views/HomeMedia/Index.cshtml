@@ -1,0 +1,122 @@
+@model AdminHomeMediaViewModel
+
+<div class="adm-card">
+    <header class="adm-card-head">
+        <div>
+            <h2 class="adm-card-title">Médias de la page d'accueil</h2>
+            <p class="adm-card-sub">La vidéo du hero et les images sont publiées immédiatement en boutique.</p>
+        </div>
+        @if (Model.UpdatedAt.HasValue)
+        {
+            <span class="adm-card-pill">Mis à jour le @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")</span>
+        }
+    </header>
+
+    <form class="adm-form" asp-area="Admin" asp-controller="HomeMedia" asp-action="Update"
+          method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="adm-validation"></div>
+
+        <div class="adm-form-grid">
+            <div class="adm-field is-full">
+                <label class="adm-label" asp-for="HeroVideoUrl"></label>
+                <input class="adm-input" asp-for="HeroVideoUrl" placeholder="/uploads/home/videos/hero.mp4" />
+                <span class="adm-field-error" asp-validation-for="HeroVideoUrl"></span>
+            </div>
+
+            <div class="adm-field is-full">
+                <label class="adm-label" asp-for="HeroVideoFile"></label>
+                <div class="adm-upload">
+                    <input class="adm-input adm-file" asp-for="HeroVideoFile" type="file"
+                           accept="video/mp4,video/webm,video/ogg" />
+                    <span class="adm-help">MP4 ou WEBM recommandé · 50 Mo maximum. Le fichier envoyé remplace l'URL ci-dessus.</span>
+                    <span class="adm-field-error" asp-validation-for="HeroVideoFile"></span>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.EffectiveHeroVideoUrl))
+            {
+                <div class="adm-field is-full">
+                    <span class="adm-label">Aperçu de la vidéo</span>
+                    <video class="adm-media-preview" src="@Model.EffectiveHeroVideoUrl" controls muted
+                           playsinline preload="metadata"></video>
+                    <label class="adm-check">
+                        <input asp-for="RemoveHeroVideo" />
+                        <span>Supprimer la vidéo (le poster reste affiché)</span>
+                    </label>
+                </div>
+            }
+
+            <div class="adm-field is-full">
+                <label class="adm-label" asp-for="HeroPosterUrl"></label>
+                <input class="adm-input" asp-for="HeroPosterUrl" placeholder="/uploads/home/images/poster.jpg" />
+                <span class="adm-field-error" asp-validation-for="HeroPosterUrl"></span>
+            </div>
+
+            <div class="adm-field is-full">
+                <label class="adm-label" asp-for="HeroPosterFile"></label>
+                <div class="adm-upload">
+                    <input class="adm-input adm-file" asp-for="HeroPosterFile" type="file"
+                           accept="image/png,image/jpeg,image/webp,image/gif,image/avif,image/svg+xml" />
+                    <span class="adm-help">Image affichée pendant le chargement ou si aucune vidéo n'est définie · 10 Mo maximum.</span>
+                    <span class="adm-field-error" asp-validation-for="HeroPosterFile"></span>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.EffectiveHeroPosterUrl))
+            {
+                <div class="adm-field is-full">
+                    <span class="adm-label">Aperçu du poster</span>
+                    <div class="adm-image-preview is-wide">
+                        <img src="@Model.EffectiveHeroPosterUrl" alt="Aperçu du poster du hero" />
+                    </div>
+                    <label class="adm-check">
+                        <input asp-for="RemoveHeroPoster" />
+                        <span>Supprimer le poster personnalisé</span>
+                    </label>
+                </div>
+            }
+
+            <div class="adm-field is-full">
+                <label class="adm-label" asp-for="PromoImageUrl"></label>
+                <input class="adm-input" asp-for="PromoImageUrl" placeholder="/uploads/home/images/promo.jpg" />
+                <span class="adm-field-error" asp-validation-for="PromoImageUrl"></span>
+            </div>
+
+            <div class="adm-field is-full">
+                <label class="adm-label" asp-for="PromoImageFile"></label>
+                <div class="adm-upload">
+                    <input class="adm-input adm-file" asp-for="PromoImageFile" type="file"
+                           accept="image/png,image/jpeg,image/webp,image/gif,image/avif,image/svg+xml" />
+                    <span class="adm-help">Image de la section « Offres &amp; nouveautés » · 10 Mo maximum.</span>
+                    <span class="adm-field-error" asp-validation-for="PromoImageFile"></span>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.EffectivePromoImageUrl))
+            {
+                <div class="adm-field is-full">
+                    <span class="adm-label">Aperçu de l'image promotionnelle</span>
+                    <div class="adm-image-preview is-wide">
+                        <img src="@Model.EffectivePromoImageUrl" alt="Aperçu de l'image promotionnelle" />
+                    </div>
+                    <label class="adm-check">
+                        <input asp-for="RemovePromoImage" />
+                        <span>Supprimer l'image personnalisée (retour au produit mis en avant)</span>
+                    </label>
+                </div>
+            }
+        </div>
+
+        <div class="adm-form-actions">
+            <button class="adm-btn is-primary" type="submit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="m5 12 4.2 4.2L19 6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Enregistrer les médias
+            </button>
+            <a class="adm-btn" asp-area="" asp-controller="Home" asp-action="Index" target="_blank" rel="noopener">
+                Voir la page d'accueil
+            </a>
+        </div>
+    </form>
+</div>

@@ -1407,6 +1407,36 @@
     object-fit: contain;
 }
 
+.adm-image-preview.is-wide {
+    width: 100%;
+    max-width: 340px;
+    height: 190px;
+}
+
+.adm-media-preview {
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid var(--adm-line);
+    border-radius: 12px;
+    background: #0b1220;
+}
+
+.adm-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    color: var(--adm-ink-soft);
+    font-size: 12.5px;
+    cursor: pointer;
+}
+
+.adm-check input {
+    width: 15px;
+    height: 15px;
+    accent-color: var(--adm-blue);
+}
+
 /* ===== Detail layout ===== */
 .adm-detail-grid {
     display: grid;

@@ -41,7 +41,7 @@
             </div>
             <div>
                 <span class="adm-detail-label">Total dépensé</span>
-                <strong class="adm-detail-value">@Model.TotalSpent.ToString("N2") €</strong>
+                <strong class="adm-detail-value">@Model.TotalSpent.ToString("N2") TND</strong>
             </div>
             <div>
                 <span class="adm-detail-label">Dernière commande</span>
@@ -54,7 +54,7 @@
             <div>
                 <span class="adm-detail-label">Panier moyen</span>
                 <strong class="adm-detail-value">
-                    @(Model.OrdersCount == 0 ? "0,00 €" : (Model.TotalSpent / Model.OrdersCount).ToString("N2") + " €")
+                    @(Model.OrdersCount == 0 ? "0,00 TND" : (Model.TotalSpent / Model.OrdersCount).ToString("N2") + " TND")
                 </strong>
             </div>
         </div>
@@ -98,7 +98,7 @@
                             <td><span class="adm-order-number">@order.OrderNumber</span></td>
                             <td>@order.OrderDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
                             <td class="is-end">@order.ItemCount</td>
-                            <td class="is-end">@order.TotalAmount.ToString("N2") €</td>
+                            <td class="is-end">@order.TotalAmount.ToString("N2") TND</td>
                             <td><span class="adm-badge @order.StatusBadgeClass">@order.StatusLabel</span></td>
                             <td><span class="adm-pay-badge">@order.PaymentStatusLabel</span></td>
                             <td class="is-end">

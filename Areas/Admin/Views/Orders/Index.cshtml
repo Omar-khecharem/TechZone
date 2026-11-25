@@ -81,7 +81,7 @@
                             </td>
                             <td>@order.OrderDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
                             <td class="is-end">@order.ItemCount</td>
-                            <td class="is-end">@order.TotalAmount.ToString("N2") €</td>
+                            <td class="is-end">@order.TotalAmount.ToString("N2") TND</td>
                             <td><span class="adm-badge @order.StatusBadgeClass">@order.StatusLabel</span></td>
                             <td><span class="adm-pay-badge">@order.PaymentStatusLabel</span></td>
                             <td class="is-end">

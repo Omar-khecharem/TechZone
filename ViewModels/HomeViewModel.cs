@@ -7,5 +7,11 @@ namespace TechZone.ViewModels
 
         public IReadOnlyList<CategoryFilterViewModel> Categories { get; set; } =
             Array.Empty<CategoryFilterViewModel>();
+
+        public string? HeroVideoUrl { get; set; }
+
+        public string? HeroPosterUrl { get; set; }
+
+        public string? PromoImageUrl { get; set; }
     }
 }

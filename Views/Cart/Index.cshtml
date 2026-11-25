@@ -119,7 +119,7 @@
                                         <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">@item.ProductName</a>
                                     </h2>
                                     <div class="cart-item-meta">
-                                        <span>@item.UnitPrice.ToString("N2") € / unité</span>
+                                        <span>@item.UnitPrice.ToString("N2") TND / unité</span>
                                         <span class="cart-item-stock @(item.Stock > 0 ? "is-in" : "is-out")">@stockLabel</span>
                                     </div>
                                 </div>
@@ -136,7 +136,7 @@
                                                 aria-label="Augmenter la quantité de @item.ProductName">+</button>
                                     </form>
 
-                                    <span class="cart-line">@item.LineTotal.ToString("N2") €</span>
+                                    <span class="cart-line">@item.LineTotal.ToString("N2") TND</span>
 
                                     <form class="cart-remove-form" asp-action="Remove" method="post">
                                         <input type="hidden" name="cartItemId" value="@item.CartItemId" />
@@ -159,7 +159,7 @@
                     <div class="cart-summary-lines">
                         <div class="cart-summary-row">
                             <span>Sous-total (@Model.TotalQuantity article(s))</span>
-                            <span>@Model.Subtotal.ToString("N2") €</span>
+                            <span>@Model.Subtotal.ToString("N2") TND</span>
                         </div>
                         <div class="cart-summary-row">
                             <span>Livraison</span>
@@ -167,7 +167,7 @@
                         </div>
                         <div class="cart-summary-row is-total">
                             <span>Total</span>
-                            <span>@Model.Total.ToString("N2") €</span>
+                            <span>@Model.Total.ToString("N2") TND</span>
                         </div>
                     </div>
 

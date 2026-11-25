@@ -801,18 +801,18 @@ dotnet ef database drop
 
 | Produit | Catégorie | Prix | Stock | Ventes |
 |---|---|---:|---:|---:|
-| UltraBook Pro 14 | Ordinateurs portables | 1 299,99 € | 12 | 42 |
-| Notebook Air 13 | Ordinateurs portables | 949,00 € | 18 | 35 |
-| Studio Laptop 16 | Ordinateurs portables | 1 599,00 € | 7 | 18 |
-| Pulse X5 | Smartphones | 699,99 € | 25 | 64 |
-| Pulse Mini | Smartphones | 449,00 € | 30 | 27 |
-| Nova Ultra | Smartphones | 899,00 € | 14 | 51 |
-| Clavier mécanique K80 | Accessoires | 89,90 € | 40 | 73 |
-| Souris ergonomique M20 | Accessoires | 39,90 € | 60 | 48 |
-| Casque Bluetooth H7 | Accessoires | 129,00 € | 22 | 39 |
-| Chargeur USB-C 65 W | Accessoires | 34,90 € | 80 | 85 |
-| Écran 27 pouces QHD | Écrans | 279,00 € | 16 | 22 |
-| Écran 32 pouces 4K | Écrans | 449,00 € | 10 | 30 |
+| UltraBook Pro 14 | Ordinateurs portables | 1 299,99 TND | 12 | 42 |
+| Notebook Air 13 | Ordinateurs portables | 949,00 TND | 18 | 35 |
+| Studio Laptop 16 | Ordinateurs portables | 1 599,00 TND | 7 | 18 |
+| Pulse X5 | Smartphones | 699,99 TND | 25 | 64 |
+| Pulse Mini | Smartphones | 449,00 TND | 30 | 27 |
+| Nova Ultra | Smartphones | 899,00 TND | 14 | 51 |
+| Clavier mécanique K80 | Accessoires | 89,90 TND | 40 | 73 |
+| Souris ergonomique M20 | Accessoires | 39,90 TND | 60 | 48 |
+| Casque Bluetooth H7 | Accessoires | 129,00 TND | 22 | 39 |
+| Chargeur USB-C 65 W | Accessoires | 34,90 TND | 80 | 85 |
+| Écran 27 pouces QHD | Écrans | 279,00 TND | 16 | 22 |
+| Écran 32 pouces 4K | Écrans | 449,00 TND | 10 | 30 |
 
 Chaque produit possède un visuel SVG dans `wwwroot/images/products/`.
 
