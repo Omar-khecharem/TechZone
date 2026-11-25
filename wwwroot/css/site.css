@@ -4004,7 +4004,7 @@ body.has-comparebar {
   display: grid;
   place-items: center;
   aspect-ratio: 4 / 3;
-  padding: clamp(24px, 4vw, 56px);
+  padding: 0;
   border: 1px solid var(--tz-line);
   border-radius: 26px;
   background: radial-gradient(circle at 50% 42%, #ffffff 0%, #f8fafc 58%, #eef3f9 100%);
@@ -4016,8 +4016,8 @@ body.has-comparebar {
   z-index: 1;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 26px 34px rgba(15, 23, 42, 0.14));
+  object-fit: cover;
+  object-position: center;
 }
 
 .pd-media-tag {
@@ -4326,7 +4326,7 @@ body.has-comparebar {
 
   .pd-media-frame {
     border-radius: 20px;
-    padding: 20px;
+    padding: 0;
   }
 
   .pd-media-tag {
@@ -5142,8 +5142,9 @@ body.has-comparebar {
 .cart-item-media img {
   width: 100%;
   height: 100%;
-  padding: 10px;
-  object-fit: contain;
+  padding: 0;
+  object-fit: cover;
+  object-position: center;
 }
 
 .cart-item-main {
